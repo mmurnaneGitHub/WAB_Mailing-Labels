@@ -1,6 +1,8 @@
 # WAB_Mailing-Labels
 Mailing Labels Widget for https://wsitd03/website/labels/
 
+Version 2.12
+
 INSTRUCTIONS:
 
    A. Copy Query folder from previous app version to \widgets\Query.  Replace Widget.js & SingleQueryResult.js from this repository.
