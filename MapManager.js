@@ -316,6 +316,16 @@ define([
           this._publishMapEvent(map);
           setTimeout(lang.hitch(this, this._checkAppState), 500);
           this._addDataLoadingOnMapUpdate(map);
+
+          //MJM - Modify visible layers on web map	
+          //https://community.esri.com/message/634867-how-to-remove-all-layers-from-a-web-appbuilder-app-dev	
+	         this.layerInfosObj.getLayerInfoArray().forEach(function(layerInfo) {	
+	           if (layerInfo.title != 'General'){	
+	           	layerInfo.setTopLayerVisible(false);  //turn off all parent (top) layers except General	
+	           }	
+	         });	
+          //end MJM	
+          
         }), lang.hitch(this, function(error) {
           console.error(error);
           this._showError(error);
