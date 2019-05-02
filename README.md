@@ -19,6 +19,6 @@ INSTRUCTIONS:
    
    
  ==================== FUTURE ENHANCEMENTS ==================== 
- - remove blank line in spreadsheet for first record
- - try to get task without using index number - Widget.js, _MailingLabels_findIndex, line ~1182
- - rename widget and update app config.json or test if all other ESRI query widget files are compatible.  Folder currently has over 140 files.
+ - Remove blank line in spreadsheet for first record.
+ - Try to get task without using index number - Widget.js, _MailingLabels_findIndex, line ~1182.
+ - Rename widget and update app config.json or test if all other ESRI query widget files are compatible.  Folder currently has over 140 files.
