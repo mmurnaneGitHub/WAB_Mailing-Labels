@@ -16,6 +16,7 @@ Modification of ESRI default files:
    
    
    
+ ====================
  FUTURE ENHANCEMENTS:
  - remove blank line in spreadsheet for first record
  - try to get task without using index number - Widget.js, _MailingLabels_findIndex, line ~1182
