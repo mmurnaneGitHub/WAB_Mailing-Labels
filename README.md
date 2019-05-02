@@ -6,7 +6,9 @@ Modification of ESRI default files:
    B. File \jimu.js\MapManager.js - See //MJM modifications to change default layer visibity on web map.
 
 INSTRUCTIONS:
+
    A. Copy Query folder to \widgets\Query.
+   
    B. Copy MapManager.js to \jimu.js\MapManager.js.
 
  FUTURE ENHANCEMENTS:
