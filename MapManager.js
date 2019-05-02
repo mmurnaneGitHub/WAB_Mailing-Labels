@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// Copyright © 2014 - 2018 Esri. All Rights Reserved.
+// Copyright © Esri. All Rights Reserved.
 //
 // Licensed under the Apache License Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ define([
         topic.subscribe("mapContentModified", lang.hitch(this, this.onMapContentModified));
 
         on(window, 'resize', lang.hitch(this, this.onWindowResize));
-        on(window, 'beforeunload', lang.hitch(this, this.onBeforeUnload));
+        on(window, 'unload', lang.hitch(this, this.onUnload));
       },
 
       showMap: function() {
@@ -97,7 +97,7 @@ define([
         }
       },
 
-      onBeforeUnload: function() {
+      onUnload: function() {
         if(this.appConfig.keepAppState) {
           this.appStateManager.saveWabAppState(this.map, this.layerInfosObj);
         }
@@ -316,16 +316,6 @@ define([
           this._publishMapEvent(map);
           setTimeout(lang.hitch(this, this._checkAppState), 500);
           this._addDataLoadingOnMapUpdate(map);
-
-          //MJM - Modify visible layers on web map
-          //https://community.esri.com/message/634867-how-to-remove-all-layers-from-a-web-appbuilder-app-dev
-	         this.layerInfosObj.getLayerInfoArray().forEach(function(layerInfo) {
-	           if (layerInfo.title != 'General'){
-	           	layerInfo.setTopLayerVisible(false);  //turn off all parent (top) layers except General
-	           }
-	         });
-          //end MJM
-
         }), lang.hitch(this, function(error) {
           console.error(error);
           this._showError(error);
