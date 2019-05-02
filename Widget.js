@@ -26,9 +26,9 @@ define([
     'dijit/_WidgetsInTemplateMixin',
     'jimu/utils',
     'jimu/BaseWidget',
-     'jimu/CSVUtils',  //MJM
-     'esri/tasks/query',  //MJM
-     'esri/tasks/QueryTask',  //MJM
+    'jimu/CSVUtils', //MJM
+    'esri/tasks/query', //MJM
+    'esri/tasks/QueryTask', //MJM
     'jimu/MapManager',
     'jimu/filterUtils',
     'jimu/dijit/Message',
@@ -48,7 +48,7 @@ define([
     'dijit/form/Select'
   ],
   function(on, query, Deferred, lang, html, array, all, declare, _WidgetsInTemplateMixin, jimuUtils, BaseWidget,
-  	CSVUtils, EsriQuery, QueryTask,
+    CSVUtils, EsriQuery, QueryTask,
     MapManager, FilterUtils, Message, jimuSymUtils, esriLang, esriRequest, symbolJsonUtils, FeatureLayer, PopupTemplate,
     SimpleRenderer, TaskSetting, SingleQueryLoader, SingleQueryResult, queryUtils, LayerInfos) {
 
@@ -57,7 +57,7 @@ define([
       baseClass: 'jimu-widget-query',
       currentTaskSetting: null,
       hiddenClass: "not-visible",
-      _resultLayerInfos: null,//[{value,label,taskIndex,singleQueryResult}]
+      _resultLayerInfos: null, //[{value,label,taskIndex,singleQueryResult}]
       mapManager: null,
       layerInfosObj: null,
       labelTasks: '',
@@ -80,44 +80,46 @@ define([
       3. if queryType is 3, it means that the query doesn't support objectIds.
       */
 
-      postMixInProperties: function(){
+      postMixInProperties: function() {
         this.inherited(arguments);
         this.layerInfosObj = LayerInfos.getInstanceSync();
         this.mapManager = MapManager.getInstance();
         this._resultLayerInfos = [];
         var strClearResults = this.nls.clearResults;
-        var tip = esriLang.substitute({clearResults:strClearResults}, this.nls.operationalTip);
+        var tip = esriLang.substitute({
+          clearResults: strClearResults
+        }, this.nls.operationalTip);
         this.nls.operationalTip = tip;
         this.labelTasks = this.nls.tasks;
         this.labelResults = this.nls.queryResults;
         this._setUrlForConfig();
-        if(this.config){
+        if (this.config) {
           this.config = queryUtils.getConfigWithValidDataSource(this.config);
           this._updateConfig();
-          if(this.config.labelTasks){
+          if (this.config.labelTasks) {
             this.labelTasks = this.config.labelTasks;
           }
-          if(this.config.labelResults){
+          if (this.config.labelResults) {
             this.labelResults = this.config.labelResults;
           }
         }
       },
 
-      _updateConfig: function(){
-        if(this.config && this.config.queries && this.config.queries.length > 0){
-          array.forEach(this.config.queries, lang.hitch(this, function(singleConfig){
+      _updateConfig: function() {
+        if (this.config && this.config.queries && this.config.queries.length > 0) {
+          array.forEach(this.config.queries, lang.hitch(this, function(singleConfig) {
             this._rebuildFilter(singleConfig.url, singleConfig.filter);
           }));
         }
       },
 
-      _setUrlForConfig: function(){
+      _setUrlForConfig: function() {
         //set url attribute of config if webMapLayerId is set
-        if(this.config && this.config.queries && this.config.queries.length > 0){
-          array.forEach(this.config.queries, lang.hitch(this, function(singleConfig){
-            if(singleConfig.webMapLayerId){
+        if (this.config && this.config.queries && this.config.queries.length > 0) {
+          array.forEach(this.config.queries, lang.hitch(this, function(singleConfig) {
+            if (singleConfig.webMapLayerId) {
               var layerInfoOrTableInfo = this.layerInfosObj.getLayerOrTableInfoById(singleConfig.webMapLayerId);
-              if(layerInfoOrTableInfo){
+              if (layerInfoOrTableInfo) {
                 singleConfig.url = layerInfoOrTableInfo.getUrl();
               }
             }
@@ -125,75 +127,75 @@ define([
         }
       },
 
-      _rebuildFilter: function(url, filter){
-        try{
-          if(filter){
+      _rebuildFilter: function(url, filter) {
+        try {
+          if (filter) {
             delete filter.expr;
             var filterUtils = new FilterUtils();
             filterUtils.isHosted = jimuUtils.isHostedService(url);
             filterUtils.getExprByFilterObj(filter);
           }
-        }catch(e){
+        } catch (e) {
           console.log(e);
         }
       },
 
-      postCreate:function(){
+      postCreate: function() {
         this.inherited(arguments);
         this._initSelf();
         this._updateResultDetailUI();
         var trs = query('.single-task', this.tasksTbody);
-        if(trs.length === 1){
+        if (trs.length === 1) {
           html.addClass(this.domNode, 'only-one-task');
           this._showTaskSettingPane();
           this._onClickTaskTr(trs[0]);
         }
         //MJM - Mailing Labels -----------------------------------------------------
-          //need query (EsriQuery) & QueryTask
-          //GROUPACCOUNT PARCELS
-          this.qtMailingLabelsGroupAccount = new QueryTask("https://arcgisprod02.tacoma.lcl/arcgis/rest/services/PDS/MailingLabels/MapServer/2");
-          this.qMailingLabelsGroupAccount = new EsriQuery();
-               this.qMailingLabelsGroupAccount.returnGeometry = false;
-               this.qMailingLabelsGroupAccount.outFields = ["Taxpayer.TAXPAYERNAME","Taxpayer.CAREOF", "Taxpayer.TAXPAYERADDRESS", "Taxpayer.TAXPAYERCITY", "Taxpayer.TAXPAYERSTATE", "Taxpayer.TAXPAYERZIPCODE"];  
+        //need query (EsriQuery) & QueryTask
+        //GROUPACCOUNT PARCELS
+        this.qtMailingLabelsGroupAccount = new QueryTask("https://arcgisprod02.tacoma.lcl/arcgis/rest/services/PDS/MailingLabels/MapServer/2");
+        this.qMailingLabelsGroupAccount = new EsriQuery();
+        this.qMailingLabelsGroupAccount.returnGeometry = false;
+        this.qMailingLabelsGroupAccount.outFields = ["Taxpayer.TAXPAYERNAME", "Taxpayer.CAREOF", "Taxpayer.TAXPAYERADDRESS", "Taxpayer.TAXPAYERCITY", "Taxpayer.TAXPAYERSTATE", "Taxpayer.TAXPAYERZIPCODE"];
 
-          //OCCUPANT - ADDRESS POINTS
-          this.qtMailingLabelsOccupants = new QueryTask("https://arcgisprod02.tacoma.lcl/arcgis/rest/services/PDS/MailingLabels/MapServer/0");
-          this.qMailingLabelsOccupants = new EsriQuery();
-               this.qMailingLabelsOccupants.returnGeometry = false;
-               this.qMailingLabelsOccupants.outFields = ["*"];  
-          //Set global variable for current task index - varies by order user performs tasks
-          var currentTaskIndex;
+        //OCCUPANT - ADDRESS POINTS
+        this.qtMailingLabelsOccupants = new QueryTask("https://arcgisprod02.tacoma.lcl/arcgis/rest/services/PDS/MailingLabels/MapServer/0");
+        this.qMailingLabelsOccupants = new EsriQuery();
+        this.qMailingLabelsOccupants.returnGeometry = false;
+        this.qMailingLabelsOccupants.outFields = ["*"];
+        //Set global variable for current task index - varies by order user performs tasks
+        var currentTaskIndex;
         //end Mailing Labels--------------------------------------------------
       },
 
-      onOpen: function(){
+      onOpen: function() {
         var info = this._getCurrentResultLayerInfo();
         var singleQueryResult = info && info.singleQueryResult;
-        if(singleQueryResult){
+        if (singleQueryResult) {
           singleQueryResult.showLayer();
         }
         this._showTempLayers();
         this.inherited(arguments);
       },
 
-      onActive: function(){
+      onActive: function() {
         //this.map.setInfoWindowOnClick(false);
         // this.mapManager.disableWebMapPopup();
         this._showTempLayers();
       },
 
-      onDeActive: function(){
+      onDeActive: function() {
         //deactivate method of DrawBox dijit will call this.map.setInfoWindowOnClick(true) inside
         // this.drawBox.deactivate();
-        if(this.currentTaskSetting){
+        if (this.currentTaskSetting) {
           this.currentTaskSetting.deactivate();
         }
         this.mapManager.enableWebMapPopup();
         this._hideTempLayers();
       },
 
-      onClose:function(){
-        if(this.config.hideLayersAfterWidgetClosed){
+      onClose: function() {
+        if (this.config.hideLayersAfterWidgetClosed) {
           this._hideAllLayers();
         }
         this._hideInfoWindow();
@@ -201,44 +203,44 @@ define([
         this.inherited(arguments);
       },
 
-      destroy:function(){
+      destroy: function() {
         this._hideInfoWindow();
         this._removeResultLayerInfos(this._resultLayerInfos);
         this.inherited(arguments);
       },
 
-      _hideTempLayers: function(){
-        if(this.currentTaskSetting){
+      _hideTempLayers: function() {
+        if (this.currentTaskSetting) {
           this.currentTaskSetting.hideTempLayers();
         }
       },
 
-      _showTempLayers: function(){
-        if(this.currentTaskSetting){
+      _showTempLayers: function() {
+        if (this.currentTaskSetting) {
           this.currentTaskSetting.showTempLayers();
         }
       },
 
-      _initSelf:function(){
+      _initSelf: function() {
         var queries = this.config.queries;
 
-        if(queries.length === 0){
+        if (queries.length === 0) {
           html.setStyle(this.tasksNode, 'display', 'none');
           html.setStyle(this.noQueryTipSection, 'display', 'block');
           return;
         }
 
         //create query tasks
-        array.forEach(queries, lang.hitch(this, function(singleConfig, index){
+        array.forEach(queries, lang.hitch(this, function(singleConfig, index) {
           var defaultIcon = this.folderUrl + "css/images/default_task_icon.png";
           queryUtils.dynamicUpdateConfigIcon(singleConfig, defaultIcon);
           var name = singleConfig.name;
           var strTr = '<tr class="single-task">' +
             '<td class="first-td"><span class="task-icon"></span></td>' +
             '<td class="second-td">' +
-              '<div class="list-item-name task-name-div"></div>' +
+            '<div class="list-item-name task-name-div"></div>' +
             '</td>' +
-          '</tr>';
+            '</tr>';
           var tr = html.toDom(strTr);
           var queryNameDiv = query(".task-name-div", tr)[0];
           queryNameDiv.innerHTML = name;
@@ -269,40 +271,40 @@ define([
 
           tr.taskIndex = index;
           tr.singleConfig = singleConfig;
-          if(index % 2 === 0){
+          if (index % 2 === 0) {
             html.addClass(tr, 'even');
-          }else{
+          } else {
             html.addClass(tr, 'odd');
           }
         }));
       },
 
-      _onTabHeaderClicked: function(event){
+      _onTabHeaderClicked: function(event) {
         var target = event.target || event.srcElement;
-        if(target === this.taskQueryItem){
+        if (target === this.taskQueryItem) {
           var currentResultLayerInfo = this._getCurrentResultLayerInfo();
-          if(currentResultLayerInfo){
+          if (currentResultLayerInfo) {
             var singleQueryResult = currentResultLayerInfo.singleQueryResult;
-            if(singleQueryResult){
-              if(singleQueryResult.singleRelatedRecordsResult || singleQueryResult.multipleRelatedRecordsResult){
+            if (singleQueryResult) {
+              if (singleQueryResult.singleRelatedRecordsResult || singleQueryResult.multipleRelatedRecordsResult) {
                 singleQueryResult._showFeaturesResultDiv();
               }
             }
           }
           this._switchToTaskTab();
-        }else if(target === this.resultQueryItem){
+        } else if (target === this.resultQueryItem) {
           this._switchToResultTab();
         }
       },
 
-      _switchToTaskTab: function(){
+      _switchToTaskTab: function() {
         html.removeClass(this.resultQueryItem, 'selected');
         html.removeClass(this.resultTabView, 'selected');
         html.addClass(this.taskQueryItem, 'selected');
         html.addClass(this.taskTabView, 'selected');
       },
 
-      _switchToResultTab: function(){
+      _switchToResultTab: function() {
         this._updateResultDetailUI();
         html.removeClass(this.taskQueryItem, 'selected');
         html.removeClass(this.taskTabView, 'selected');
@@ -310,23 +312,23 @@ define([
         html.addClass(this.resultTabView, 'selected');
       },
 
-      _updateResultDetailUI: function(){
-        if(this._resultLayerInfos.length > 0){
+      _updateResultDetailUI: function() {
+        if (this._resultLayerInfos.length > 0) {
           html.removeClass(this.resultSection, this.hiddenClass);
           html.addClass(this.noresultSection, this.hiddenClass);
-        }else{
+        } else {
           html.addClass(this.resultSection, this.hiddenClass);
           html.removeClass(this.noresultSection, this.hiddenClass);
         }
       },
 
-      _showTaskListPane: function(){
+      _showTaskListPane: function() {
         this._switchToTaskTab();
         html.setStyle(this.taskList, 'display', 'block');
         html.setStyle(this.taskSettingContainer, 'display', 'none');
       },
 
-      _showTaskSettingPane: function(){
+      _showTaskSettingPane: function() {
         this._switchToTaskTab();
         html.setStyle(this.taskList, 'display', 'none');
         html.setStyle(this.taskSettingContainer, 'display', 'block');
@@ -334,29 +336,29 @@ define([
 
       /*------------------------------task list------------------------------------*/
 
-      _onTaskListClicked: function(event){
+      _onTaskListClicked: function(event) {
         var target = event.target || event.srcElement;
-        var tr = jimuUtils.getAncestorDom(target, lang.hitch(this, function(dom){
+        var tr = jimuUtils.getAncestorDom(target, lang.hitch(this, function(dom) {
           return html.hasClass(dom, 'single-task');
         }), 10);
 
-        if(!tr){
+        if (!tr) {
           return;
         }
 
         this._onClickTaskTr(tr);
       },
 
-      _onClickTaskTr: function(tr){
+      _onClickTaskTr: function(tr) {
         //this._getLayerInfoAndServiceInfo(tr).then(lang.hitch(this, function(response){
-        this._getLayerInfoAndRelationshipLayerInfos(tr).then(lang.hitch(this, function(response){
+        this._getLayerInfoAndRelationshipLayerInfos(tr).then(lang.hitch(this, function(response) {
           var layerInfo = response.layerInfo;
           //var serviceInfo = response.serviceInfo;
           var relationshipLayerInfos = response.relationshipLayerInfos;
           var relationshipPopupTemplates = response.relationshipPopupTemplates;
           tr.singleConfig.objectIdField = jimuUtils.getObjectIdField(layerInfo);
           var popupInfo = this._getPopupInfo(layerInfo, tr.singleConfig);
-          if(!popupInfo){
+          if (!popupInfo) {
             console.error("can't get popupInfo");
           }
           popupInfo.fieldInfos = queryUtils.getPortalFieldInfosWithoutShape(layerInfo, popupInfo.fieldInfos);
@@ -402,31 +404,31 @@ define([
 
           this.currentTaskSetting.placeAt(this.taskSettingContainer);
 
-        //MJM Mailing Labels - Do when When Task options section is shown in panel
-        if (currentAttrs.config.name.indexOf('Select by Parcel Number') !== -1 ){  //two tasks possible - DOM rebuilt on each task click, so remove each time (can't use includes with IE)
-        	//Configure widget task to have both of the following options:
-        	//* Only return features that intersect with the shape drawn on the map (set default buffer distance to 1,000')
-        	//* Return features within full extent of the map (set as default)
-        	//  ... and now hide/show elements below
-		    setTimeout(myLittleHack, 300);  //page is not finished rendering, so wait for it 
-		    function myLittleHack() {
-			    document.getElementsByClassName('dijitSelect')[0].style.display = 'none';  //hide draw tools
-			    document.getElementsByClassName('jimu-draw-box')[0].style.display = 'none';  //hide spatial filter menu
-			    document.getElementsByClassName('drawing-section')[0].style.display = 'block';  //show the buffer distance section
-			}
-        };
-        //end MJM
+          //MJM Mailing Labels - Do when When Task options section is shown in panel
+          if (currentAttrs.config.name.indexOf('Select by Parcel Number') !== -1) { //two tasks possible - DOM rebuilt on each task click, so remove each time (can't use includes with IE)
+            //Configure widget task to have both of the following options:
+            //* Only return features that intersect with the shape drawn on the map (set default buffer distance to 1,000')
+            //* Return features within full extent of the map (set as default)
+            //  ... and now hide/show elements below
+            setTimeout(myLittleHack, 300); //page is not finished rendering, so wait for it 
+            function myLittleHack() {
+              document.getElementsByClassName('dijitSelect')[0].style.display = 'none'; //hide draw tools
+              document.getElementsByClassName('jimu-draw-box')[0].style.display = 'none'; //hide spatial filter menu
+              document.getElementsByClassName('drawing-section')[0].style.display = 'block'; //show the buffer distance section
+            }
+          };
+          //end MJM
 
 
-        
 
-        }), lang.hitch(this, function(err){
+
+        }), lang.hitch(this, function(err) {
           console.error("can't get layerInfo", err);
 
         }));
       },
 
-      _getLayerInfoAndServiceInfo: function(tr){
+      _getLayerInfoAndServiceInfo: function(tr) {
         var def = new Deferred();
         var layerDef = this._getLayerInfo(tr);
         var serviceDef = this._getServiceInfo(tr);
@@ -458,14 +460,14 @@ define([
         return def;
       },
 
-      _getLayerInfoAndRelationshipLayerInfos: function(tr){
+      _getLayerInfoAndRelationshipLayerInfos: function(tr) {
         var def = new Deferred();
         this.shelter.show();
         var layerDef = this._getLayerInfo(tr);
-        layerDef.then(lang.hitch(this, function(layerInfo){
+        layerDef.then(lang.hitch(this, function(layerInfo) {
           tr.layerInfo = layerInfo;
-          this._getRelationshipLayerInfos(tr).then(lang.hitch(this, function(relationshipLayerInfos){
-            if(!this.domNode){
+          this._getRelationshipLayerInfos(tr).then(lang.hitch(this, function(relationshipLayerInfos) {
+            if (!this.domNode) {
               return;
             }
 
@@ -475,11 +477,11 @@ define([
 
             var baseServiceUrl = tr.singleConfig.url.replace(/\d*\/*$/g, '');
 
-            for(var layerId in relationshipLayerInfos){
+            for (var layerId in relationshipLayerInfos) {
               var layerDefinition = relationshipLayerInfos[layerId];
               //var popupInfo = queryUtils.getDefaultPopupInfo(layerDefinition, false, true);
               var layerUrl = baseServiceUrl + layerId;
-              var popupInfo = queryUtils.getPopupInfoForRelatedLayer(webMapItemData, layerUrl , layerDefinition);
+              var popupInfo = queryUtils.getPopupInfoForRelatedLayer(webMapItemData, layerUrl, layerDefinition);
               relationshipPopupTemplates[layerId] = new PopupTemplate(popupInfo);
             }
             this.shelter.hide();
@@ -488,15 +490,15 @@ define([
               relationshipLayerInfos: relationshipLayerInfos,
               relationshipPopupTemplates: relationshipPopupTemplates
             });
-          }), lang.hitch(this, function(err){
-            if(!this.domNode){
+          }), lang.hitch(this, function(err) {
+            if (!this.domNode) {
               return;
             }
             this.shelter.hide();
             def.reject(err);
           }));
-        }), lang.hitch(this, function(err){
-          if(!this.domNode){
+        }), lang.hitch(this, function(err) {
+          if (!this.domNode) {
             return;
           }
           this.shelter.hide();
@@ -506,11 +508,11 @@ define([
       },
 
       //get layer definition
-      _getLayerInfo: function(tr){
+      _getLayerInfo: function(tr) {
         var def = new Deferred();
-        if(tr.layerInfo){
+        if (tr.layerInfo) {
           def.resolve(tr.layerInfo);
-        }else{
+        } else {
           var layerUrl = tr.singleConfig.url;
           esriRequest({
             url: layerUrl,
@@ -519,10 +521,10 @@ define([
             },
             handleAs: 'json',
             callbackParamName: 'callback'
-          }).then(lang.hitch(this, function(layerInfo){
+          }).then(lang.hitch(this, function(layerInfo) {
             tr.layerInfo = layerInfo;
             def.resolve(layerInfo);
-          }), lang.hitch(this, function(err){
+          }), lang.hitch(this, function(err) {
             def.reject(err);
           }));
         }
@@ -530,11 +532,11 @@ define([
       },
 
       //get meta data of MapServer or FeatureServer
-      _getServiceInfo: function(tr){
+      _getServiceInfo: function(tr) {
         var def = new Deferred();
-        if(tr.serviceInfo){
+        if (tr.serviceInfo) {
           def.resolve(tr.serviceInfo);
-        }else{
+        } else {
           var layerUrl = tr.singleConfig.url;
           var serviceUrl = this._getServiceUrlByLayerUrl(layerUrl);
           esriRequest({
@@ -544,10 +546,10 @@ define([
             },
             handleAs: 'json',
             callbackParamName: 'callback'
-          }).then(lang.hitch(this, function(serviceInfo){
+          }).then(lang.hitch(this, function(serviceInfo) {
             tr.serviceInfo = serviceInfo;
             def.resolve(serviceInfo);
-          }), lang.hitch(this, function(err){
+          }), lang.hitch(this, function(err) {
             def.reject(err);
           }));
         }
@@ -555,17 +557,17 @@ define([
       },
 
       //get relationship layers definition
-      _getRelationshipLayerInfos: function(tr){
+      _getRelationshipLayerInfos: function(tr) {
         var def = new Deferred();
-        if(tr.relationshipLayerInfos){
+        if (tr.relationshipLayerInfos) {
           def.resolve(tr.relationshipLayerInfos);
-        }else{
+        } else {
           var layerInfo = tr.layerInfo;
           var relationships = layerInfo.relationships;
-          if(relationships && relationships.length > 0){
+          if (relationships && relationships.length > 0) {
             var layerUrl = tr.singleConfig.url;
             var serviceUrl = this._getServiceUrlByLayerUrl(layerUrl);
-            var defs = array.map(relationships, lang.hitch(this, function(relationship){
+            var defs = array.map(relationships, lang.hitch(this, function(relationship) {
               var url = serviceUrl + "/" + relationship.relatedTableId;
               return esriRequest({
                 url: url,
@@ -576,17 +578,17 @@ define([
                 callbackParamName: 'callback'
               });
             }));
-            all(defs).then(lang.hitch(this, function(results){
+            all(defs).then(lang.hitch(this, function(results) {
               tr.relationshipLayerInfos = {};
-              array.forEach(relationships, lang.hitch(this, function(relationship, index){
+              array.forEach(relationships, lang.hitch(this, function(relationship, index) {
                 tr.relationshipLayerInfos[relationship.relatedTableId] = results[index];
               }));
               def.resolve(tr.relationshipLayerInfos);
-            }), lang.hitch(this, function(err){
+            }), lang.hitch(this, function(err) {
               tr.relationshipLayerInfos = null;
               def.reject(err);
             }));
-          }else{
+          } else {
             tr.relationshipLayerInfos = {};
             def.resolve(tr.relationshipLayerInfos);
           }
@@ -594,25 +596,25 @@ define([
         return def;
       },
 
-      _getServiceUrlByLayerUrl: function(layerUrl){
+      _getServiceUrlByLayerUrl: function(layerUrl) {
         var lastIndex = layerUrl.lastIndexOf("/");
         var serviceUrl = layerUrl.slice(0, lastIndex);
         return serviceUrl;
       },
 
-      _getPopupInfo: function(layerDefinition, config){
+      _getPopupInfo: function(layerDefinition, config) {
         var result = null;
         var defaultPopupInfo = queryUtils.getDefaultPopupInfo(layerDefinition, false, false);
         result = defaultPopupInfo;
         var popupInfo = null;
-        if(config.popupInfo){
+        if (config.popupInfo) {
           //new query
-          if(config.popupInfo.readFromWebMap){
-            if(config.webMapLayerId){
+          if (config.popupInfo.readFromWebMap) {
+            if (config.webMapLayerId) {
               var layerInfo = null;
-              if(queryUtils.isTable(layerDefinition)){
+              if (queryUtils.isTable(layerDefinition)) {
                 layerInfo = this.layerInfosObj.getTableInfoById(config.webMapLayerId);
-              }else{
+              } else {
                 layerInfo = this.layerInfosObj.getLayerInfoById(config.webMapLayerId);
               }
               if (layerInfo) {
@@ -626,23 +628,23 @@ define([
               } else {
                 result = defaultPopupInfo;
               }
-            }else{
+            } else {
               result = defaultPopupInfo;
             }
-          }else{
+          } else {
             //custom popup info
             popupInfo = lang.clone(config.popupInfo);
             delete popupInfo.readFromWebMap;
             result = popupInfo;
           }
-        }else if(config.popup){
+        } else if (config.popup) {
           //old query, update old config.popup to new config.popupInfo
           result = queryUtils.upgradePopupToPopupInfo(layerDefinition, config.popup);
-        }else{
+        } else {
           result = defaultPopupInfo;
         }
 
-        if(!result){
+        if (!result) {
           result = defaultPopupInfo;
         }
 
@@ -656,7 +658,7 @@ define([
       /*------------------------------task list------------------------------------*/
 
       //start to query
-      _onBtnApplyClicked:function(currentAttrs){
+      _onBtnApplyClicked: function(currentAttrs) {
         //we should enable web map popup here
         this.mapManager.enableWebMapPopup();
 
@@ -664,10 +666,10 @@ define([
 
         //set query.resultLayer
         var singleResultLayer = currentAttrs.config.singleResultLayer;
-        if(singleResultLayer){
+        if (singleResultLayer) {
           var taskIndex = currentAttrs.queryTr.taskIndex;
           var taskOptions = this._getResultLayerInfosByTaskIndex(taskIndex);
-          if(taskOptions.length > 0){
+          if (taskOptions.length > 0) {
             //When SingleQueryResult is destroyed, the related feature layer is removed
             this._removeResultLayerInfos(taskOptions);
           }
@@ -685,7 +687,7 @@ define([
           label: queryName,
           currentAttrs: currentAttrs,
           queryWidget: this,
-          onBack: lang.hitch(this, function(){
+          onBack: lang.hitch(this, function() {
             this._switchToResultTab();
           })
         });
@@ -695,7 +697,7 @@ define([
         //we should put singleQueryResult into the dom tree when _onSingleQueryFinished is called
         //singleQueryResult.placeAt(this.singleResultDetails);
 
-        singleQueryResult.executeQueryForFirstTime().then(lang.hitch(this, function(/*allCount*/){
+        singleQueryResult.executeQueryForFirstTime().then(lang.hitch(this, function( /*allCount*/ ) {
           if (!this.domNode) {
             return;
           }
@@ -706,9 +708,9 @@ define([
           // }
           this._onSingleQueryFinished(singleQueryResult, queryName);
           this._updateResultDetailUI();
-        }), lang.hitch(this, function(err){
+        }), lang.hitch(this, function(err) {
           console.error(err);
-          if(!this.domNode){
+          if (!this.domNode) {
             return;
           }
           this.shelter.hide();
@@ -716,20 +718,19 @@ define([
         }));
       },
 
-      _getBestQueryName: function(queryName){
-        if(queryName){
+      _getBestQueryName: function(queryName) {
+        if (queryName) {
           queryName += " _" + this.nls.queryResult;
-        }
-        else{
+        } else {
           queryName += this.nls.queryResult;
         }
         var finalName = queryName;
-        var allNames = array.map(this.map.graphicsLayerIds, lang.hitch(this, function(glId){
+        var allNames = array.map(this.map.graphicsLayerIds, lang.hitch(this, function(glId) {
           var layer = this.map.getLayer(glId);
           return layer.name;
         }));
         var flag = 2;
-        while(array.indexOf(allNames, finalName) >= 0){
+        while (array.indexOf(allNames, finalName) >= 0) {
           finalName = queryName + '_' + flag;
           flag++;
         }
@@ -737,7 +738,7 @@ define([
       },
 
       //create a FeatureLayer
-      _createNewResultLayer: function(currentAttrs, queryName){
+      _createNewResultLayer: function(currentAttrs, queryName) {
         var resultLayer = null;
         var renderer = null;
         var taskIndex = currentAttrs.queryTr.taskIndex;
@@ -777,7 +778,7 @@ define([
         //set popupTemplate
         var popupInfo = lang.clone(currentAttrs.config.popupInfo);
         var popupTemplate = new PopupTemplate(popupInfo);
-        if(popupInfo.showAttachments){
+        if (popupInfo.showAttachments) {
           var url = currentAttrs.config.url;
           var objectIdField = currentAttrs.config.objectIdField;
           queryUtils.overridePopupTemplateMethodGetAttachments(popupTemplate, url, objectIdField);
@@ -788,8 +789,8 @@ define([
 
         //set renderer
         //if the layer is a table, resultsSymbol will be null
-        if(!queryUtils.isTable(currentAttrs.layerInfo)){
-          if(!currentAttrs.config.useLayerSymbol && currentAttrs.config.resultsSymbol){
+        if (!queryUtils.isTable(currentAttrs.layerInfo)) {
+          if (!currentAttrs.config.useLayerSymbol && currentAttrs.config.resultsSymbol) {
             var symbol = symbolJsonUtils.fromJson(currentAttrs.config.resultsSymbol);
             renderer = new SimpleRenderer(symbol);
             resultLayer.setRenderer(renderer);
@@ -801,7 +802,7 @@ define([
 
       /*---------------------------query result list-------------------------------*/
 
-      _onSingleQueryFinished: function(singleQueryResult, queryName){
+      _onSingleQueryFinished: function(singleQueryResult, queryName) {
         this.currentTaskSetting.onGetQueryResponse();
         singleQueryResult.placeAt(this.singleResultDetails);
         this._hideAllSingleQueryResultDijits();
@@ -829,84 +830,84 @@ define([
 
         this._updateResultDetailUI();
 
-        this._MailingLabelsStart(singleQueryResult, queryName, taskIndex);  //MJM - START MAILING LABELS!!!!!
+        this._MailingLabelsStart(singleQueryResult, queryName, taskIndex); //MJM - START MAILING LABELS!!!!!
         //console.error(singleQueryResult, ' - ', queryName, ' - ',  taskIndex);
 
       },
 
-      _onResultLayerSelectChanged: function(){
+      _onResultLayerSelectChanged: function() {
         var resultLayerInfo = this._getCurrentResultLayerInfo();
         if (resultLayerInfo) {
           this._showResultLayerInfo(resultLayerInfo);
         }
       },
 
-      _getCurrentResultLayerInfo: function(){
+      _getCurrentResultLayerInfo: function() {
         var resultLayerInfo = null;
         var value = this.resultLayersSelect.get('value');
-        if(value){
+        if (value) {
           resultLayerInfo = this._getResultLayerInfoByValue(value);
         }
         return resultLayerInfo;
       },
 
-      _hideAllLayers: function(/*optional*/ ignoredSingleQueryResult){
+      _hideAllLayers: function( /*optional*/ ignoredSingleQueryResult) {
         var dijits = this._getAllSingleQueryResultDijits();
-        array.forEach(dijits, lang.hitch(this, function(singleQueryResult){
-          if(singleQueryResult && singleQueryResult !== ignoredSingleQueryResult){
+        array.forEach(dijits, lang.hitch(this, function(singleQueryResult) {
+          if (singleQueryResult && singleQueryResult !== ignoredSingleQueryResult) {
             singleQueryResult.hideLayer();
           }
         }));
       },
 
-      _removeResultLayerInfosByTaskIndex: function(taskIndex){
+      _removeResultLayerInfosByTaskIndex: function(taskIndex) {
         var resultLayerInfos = this._getResultLayerInfosByTaskIndex(taskIndex);
         this._removeResultLayerInfos(resultLayerInfos);
       },
 
-      _getResultLayerInfoByValue: function(value){
+      _getResultLayerInfoByValue: function(value) {
         var resultLayerInfo = null;
-        array.some(this._resultLayerInfos, lang.hitch(this, function(item){
-          if(item.value === value){
+        array.some(this._resultLayerInfos, lang.hitch(this, function(item) {
+          if (item.value === value) {
             resultLayerInfo = item;
             return true;
-          }else{
+          } else {
             return false;
           }
         }));
         return resultLayerInfo;
       },
 
-      _getResultLayerInfosByTaskIndex: function(taskIndex){
+      _getResultLayerInfosByTaskIndex: function(taskIndex) {
         var resultLayerInfos = this._resultLayerInfos;
-        resultLayerInfos = array.filter(resultLayerInfos, lang.hitch(this, function(resultLayerInfo){
+        resultLayerInfos = array.filter(resultLayerInfos, lang.hitch(this, function(resultLayerInfo) {
           return resultLayerInfo.taskIndex === taskIndex;
         }));
         return resultLayerInfos;
       },
 
-      _removeResultLayerInfoByValues: function(values){
+      _removeResultLayerInfoByValues: function(values) {
         var indexArray = [];
-        array.forEach(this._resultLayerInfos, lang.hitch(this, function(resultLayerInfo, index){
-          if(values.indexOf(resultLayerInfo.value) >= 0){
+        array.forEach(this._resultLayerInfos, lang.hitch(this, function(resultLayerInfo, index) {
+          if (values.indexOf(resultLayerInfo.value) >= 0) {
             indexArray.push(index);
-            if(resultLayerInfo.singleQueryResult && resultLayerInfo.singleQueryResult.domNode){
+            if (resultLayerInfo.singleQueryResult && resultLayerInfo.singleQueryResult.domNode) {
               resultLayerInfo.singleQueryResult.destroy();
             }
             resultLayerInfo.singleQueryResult = null;
           }
         }));
         indexArray.reverse();
-        array.forEach(indexArray, lang.hitch(this, function(index){
+        array.forEach(indexArray, lang.hitch(this, function(index) {
           this._resultLayerInfos.splice(index, 1);
         }));
         this.resultLayersSelect.removeOption(values);
 
         var options = this.resultLayersSelect.getOptions();
-        if(options && options.length > 0){
+        if (options && options.length > 0) {
           this.resultLayersSelect.set('value', options[0].value);
-        }else{
-          if(typeof this.resultLayersSelect._setDisplay === "function"){
+        } else {
+          if (typeof this.resultLayersSelect._setDisplay === "function") {
             this.resultLayersSelect._setDisplay("");
           }
         }
@@ -914,19 +915,19 @@ define([
         this._updateResultDetailUI();
       },
 
-      _removeResultLayerInfos: function(resultLayerInfos){
-        var values = array.map(resultLayerInfos, lang.hitch(this, function(resultLayerInfo){
+      _removeResultLayerInfos: function(resultLayerInfos) {
+        var values = array.map(resultLayerInfos, lang.hitch(this, function(resultLayerInfo) {
           return resultLayerInfo.value;
         }));
         return this._removeResultLayerInfoByValues(values);
       },
 
-      _getAllSingleQueryResultDijits: function(){
+      _getAllSingleQueryResultDijits: function() {
         var dijits = [];
 
-        if(this._resultLayerInfos && this._resultLayerInfos.length > 0){
-          array.forEach(this._resultLayerInfos, lang.hitch(this, function(resultLayerInfo){
-            if(resultLayerInfo && resultLayerInfo.singleQueryResult){
+        if (this._resultLayerInfos && this._resultLayerInfos.length > 0) {
+          array.forEach(this._resultLayerInfos, lang.hitch(this, function(resultLayerInfo) {
+            if (resultLayerInfo && resultLayerInfo.singleQueryResult) {
               dijits.push(resultLayerInfo.singleQueryResult);
             }
           }));
@@ -935,14 +936,14 @@ define([
         return dijits;
       },
 
-      _hideAllSingleQueryResultDijits: function(){
+      _hideAllSingleQueryResultDijits: function() {
         var dijits = this._getAllSingleQueryResultDijits();
-        array.forEach(dijits, lang.hitch(this, function(dijit){
+        array.forEach(dijits, lang.hitch(this, function(dijit) {
           html.setStyle(dijit.domNode, 'display', 'none');
         }));
       },
 
-      _showResultLayerInfo: function(resultLayerInfo){
+      _showResultLayerInfo: function(resultLayerInfo) {
         this._hideAllSingleQueryResultDijits();
         var singleQueryResult = resultLayerInfo.singleQueryResult;
         this._hideAllLayers(singleQueryResult);
@@ -953,37 +954,37 @@ define([
         }
       },
 
-      removeSingleQueryResult: function(singleQueryResult){
+      removeSingleQueryResult: function(singleQueryResult) {
         var value = null;
-        array.some(this._resultLayerInfos, lang.hitch(this, function(resultLayerInfo){
-          if(resultLayerInfo.singleQueryResult === singleQueryResult){
+        array.some(this._resultLayerInfos, lang.hitch(this, function(resultLayerInfo) {
+          if (resultLayerInfo.singleQueryResult === singleQueryResult) {
             value = resultLayerInfo.value;
             return true;
-          }else{
+          } else {
             return false;
           }
         }));
-        if(value !== null){
+        if (value !== null) {
           this._removeResultLayerInfoByValues([value]);
         }
       },
 
-      _onShowRelatedRecords: function(){
+      _onShowRelatedRecords: function() {
         html.addClass(this.resultLayersSelectDiv, this.hiddenClass);
       },
 
-      _onHideRelatedRecords: function(){
+      _onHideRelatedRecords: function() {
         html.removeClass(this.resultLayersSelectDiv, this.hiddenClass);
       },
 
-      _onFeaturesUpdate: function(args){
+      _onFeaturesUpdate: function(args) {
         var taskIndex = args.taskIndex;
         var features = args.features;
-        try{
+        try {
           this.updateDataSourceData(taskIndex, {
             features: features
           });
-        }catch(e){
+        } catch (e) {
           console.error(e);
         }
       },
@@ -994,124 +995,130 @@ define([
         return (url.indexOf('/ImageServer') > -1);
       },
 
-      _showQueryErrorMsg: function(/* optional */ msg){
-        new Message({message: msg || this.nls.queryError});
+      _showQueryErrorMsg: function( /* optional */ msg) {
+        new Message({
+          message: msg || this.nls.queryError
+        });
       },
 
-      _hideInfoWindow:function(){
-        if(this.map && this.map.infoWindow){
+      _hideInfoWindow: function() {
+        if (this.map && this.map.infoWindow) {
           this.map.infoWindow.hide();
-          if(typeof this.map.infoWindow.setFeatures === 'function'){
+          if (typeof this.map.infoWindow.setFeatures === 'function') {
             this.map.infoWindow.setFeatures([]);
           }
         }
       },
 
       //MJM - START Mailing Label functions------------------------------------------------------
-      _MailingLabelsStart: function(singleQueryResult, queryName, taskIndex){
-         this.currentTaskIndex = taskIndex;  //Update current task index for Mailing Label button placement
-         var currentFields = singleQueryResult.currentAttrs.query.resultLayer.fields;  //field names and aliases
-         var currentResults = singleQueryResult.currentAttrs.query.resultLayer.graphics;  //selected records results - graphics Array
-         var currentAliases = this._MailingLabels_formatAliases(currentFields);  //get results field aliases 
+      _MailingLabelsStart: function(singleQueryResult, queryName, taskIndex) {
+        this.currentTaskIndex = taskIndex; //Update current task index for Mailing Label button placement
+        var currentFields = singleQueryResult.currentAttrs.query.resultLayer.fields; //field names and aliases
+        var currentResults = singleQueryResult.currentAttrs.query.resultLayer.graphics; //selected records results - graphics Array
+        var currentAliases = this._MailingLabels_formatAliases(currentFields); //get results field aliases 
 
-           if (currentResults.length>0 && queryName.search('Occupant Only')!=-1) {
-              //Javascript 'includes' works in Chrome, but not IE - used search('Taxpayer')!=-1 instead
-              //OCCUPANT ONLY RECORDS---------------------------------------------------------------------------
-              var unique_array_Occupants = this._MailingLabels_format4CSV(currentResults, currentAliases); //Unique occupants - format for CSV with alias fields and duplicates removed (probably all unique)
-                  unique_array_Occupants.forEach(function(n) {n.Name = 'Occupant'});  //Add name field = Occupant -  Name: Occupant to array 
-                    this._MailingLabels_createButton(unique_array_Occupants);  //Create 'Mailing Labels' button for unique occupants
+        if (currentResults.length > 0 && queryName.search('Occupant Only') != -1) {
+          //Javascript 'includes' works in Chrome, but not IE - used search('Taxpayer')!=-1 instead
+          //OCCUPANT ONLY RECORDS---------------------------------------------------------------------------
+          var unique_array_Occupants = this._MailingLabels_format4CSV(currentResults, currentAliases); //Unique occupants - format for CSV with alias fields and duplicates removed (probably all unique)
+          unique_array_Occupants.forEach(function(n) {
+            n.Name = 'Occupant'
+          }); //Add name field = Occupant -  Name: Occupant to array 
+          this._MailingLabels_createButton(unique_array_Occupants); //Create 'Mailing Labels' button for unique occupants
 
-           } else if (currentResults.length>0 && queryName.search('Taxpayer')!=-1) {
-              //Unique taxpayers - format for CSV with alias fields and duplicates removed
-                var unique_array_Taxpayer = this._MailingLabels_format4CSV(currentResults, currentAliases); 
+        } else if (currentResults.length > 0 && queryName.search('Taxpayer') != -1) {
+          //Unique taxpayers - format for CSV with alias fields and duplicates removed
+          var unique_array_Taxpayer = this._MailingLabels_format4CSV(currentResults, currentAliases);
 
-                if (queryName.search('Occupant')!=-1) {
-                  //Combine taxpayers, occupants, & group accounts
-                  var theOccupants = this._MailingLabels_UniqueOccupants(currentResults);  //Deferred to find occupants [0]
-                  var theGroupaccounts = this._MailingLabels_UniqueGroupaccounts(currentResults);  //Deferred to find groupaccount parcels [1]
-                      promises = all([theOccupants, theGroupaccounts]);  //Use Promises so all arrays are done & current before using - https://developers.arcgis.com/javascript/3/jssamples/query_deferred_list.html
-                      promises.then(lang.hitch(this,function(results){
-                        var array_Occupants_Taxpayer_Groupaccount = results[0].concat(unique_array_Taxpayer, results[1]); // Merges arrays  
-                        var unique_array_Occupants_Taxpayer_Groupaccount = this._MailingLabels_format4CSV_noDups(array_Occupants_Taxpayer_Groupaccount);  //Remove duplicates
-                          //Create 'Mailing Labels' button that opens results as a CSV file   (see 'Export to CSV file' function - ..\jimu.js\CSVUtils.js)
-                          this._MailingLabels_createButton(unique_array_Occupants_Taxpayer_Groupaccount);
-                      }), function(error){ //lang.hitch
-                        console.log(error);  //error message
-                      });  //end deferred
-                } else {
-                  //Combine taxpayers & group accounts
-                   var theGroupaccounts = this._MailingLabels_UniqueGroupaccounts(currentResults);  //Deferred to find groupaccount parcels [0]
-                      promises = all([theGroupaccounts]);  //Use Promises so all arrays are done & current before using - https://developers.arcgis.com/javascript/3/jssamples/query_deferred_list.html
-                      promises.then(lang.hitch(this,function(results){
-                        var array_Taxpayer_Groupaccount = results[0].concat(unique_array_Taxpayer); // Merges arrays  
-                        var unique_array_Taxpayer_Groupaccount = this._MailingLabels_format4CSV_noDups(array_Taxpayer_Groupaccount);  //Remove duplicates
-                          //Create 'Mailing Labels' button that opens results as a CSV file   (see 'Export to CSV file' function - ..\jimu.js\CSVUtils.js)
-                          this._MailingLabels_createButton(unique_array_Taxpayer_Groupaccount);
-                      }), function(error){ //lang.hitch
-                        console.log(error);  //error message
-                      });  //end deferred
+          if (queryName.search('Occupant') != -1) {
+            //Combine taxpayers, occupants, & group accounts
+            var theOccupants = this._MailingLabels_UniqueOccupants(currentResults); //Deferred to find occupants [0]
+            var theGroupaccounts = this._MailingLabels_UniqueGroupaccounts(currentResults); //Deferred to find groupaccount parcels [1]
+            promises = all([theOccupants, theGroupaccounts]); //Use Promises so all arrays are done & current before using - https://developers.arcgis.com/javascript/3/jssamples/query_deferred_list.html
+            promises.then(lang.hitch(this, function(results) {
+              var array_Occupants_Taxpayer_Groupaccount = results[0].concat(unique_array_Taxpayer, results[1]); // Merges arrays  
+              var unique_array_Occupants_Taxpayer_Groupaccount = this._MailingLabels_format4CSV_noDups(array_Occupants_Taxpayer_Groupaccount); //Remove duplicates
+              //Create 'Mailing Labels' button that opens results as a CSV file   (see 'Export to CSV file' function - ..\jimu.js\CSVUtils.js)
+              this._MailingLabels_createButton(unique_array_Occupants_Taxpayer_Groupaccount);
+            }), function(error) { //lang.hitch
+              console.log(error); //error message
+            }); //end deferred
+          } else {
+            //Combine taxpayers & group accounts
+            var theGroupaccounts = this._MailingLabels_UniqueGroupaccounts(currentResults); //Deferred to find groupaccount parcels [0]
+            promises = all([theGroupaccounts]); //Use Promises so all arrays are done & current before using - https://developers.arcgis.com/javascript/3/jssamples/query_deferred_list.html
+            promises.then(lang.hitch(this, function(results) {
+              var array_Taxpayer_Groupaccount = results[0].concat(unique_array_Taxpayer); // Merges arrays  
+              var unique_array_Taxpayer_Groupaccount = this._MailingLabels_format4CSV_noDups(array_Taxpayer_Groupaccount); //Remove duplicates
+              //Create 'Mailing Labels' button that opens results as a CSV file   (see 'Export to CSV file' function - ..\jimu.js\CSVUtils.js)
+              this._MailingLabels_createButton(unique_array_Taxpayer_Groupaccount);
+            }), function(error) { //lang.hitch
+              console.log(error); //error message
+            }); //end deferred
 
-                }  //end 'Occupant' check
- 
-           }  //end if 'Select: Taxpayer'
+          } //end 'Occupant' check
 
-       },  
+        } //end if 'Select: Taxpayer'
 
-      _MailingLabels_UniqueOccupants: function(currentResults){
+      },
+
+      _MailingLabels_UniqueOccupants: function(currentResults) {
         //Taxpayer & Occupant selected - use selected unique parcel numbers to select address points
         //Assumption: address points have correct parcel number, so no need to do a geographic search when attribute query will work
-        var unique_Occupants = new Deferred();  //deferred variable
-        var uniqueParcels = this._MailingLabels_UniqueField(currentResults, 'TaxParcelNumber');  //get unique parcel numbers
-         this.qMailingLabelsOccupants.where = "PARCELNUMBER in (" + uniqueParcels.join() + ")"; //Query address points by parcel number - Update where clause - change array to string for where parameter
-            //Run another deferred query - Site addresses (occupants) by currently selected parcels
-            this.qtMailingLabelsOccupants.execute(this.qMailingLabelsOccupants, lang.hitch(this,function(results){
-              //Format results array & remove duplicates
-              var unique_array_Occupants = this._MailingLabels_format4CSV(results.features, results.fieldAliases); 
-               unique_array_Occupants.forEach(function(n) {n.Name = 'Occupant'});  //Add name field = Occupant -  Name: Occupant to array
-               unique_Occupants.resolve(unique_array_Occupants);  //update deferred variable
-            }), function(error){ //lang.hitch
-              console.log(error);  //error message for this.qtMailingLabelsOccupants.execute
-            });  //end deferred query for parcels by Groupaccount
+        var unique_Occupants = new Deferred(); //deferred variable
+        var uniqueParcels = this._MailingLabels_UniqueField(currentResults, 'TaxParcelNumber'); //get unique parcel numbers
+        this.qMailingLabelsOccupants.where = "PARCELNUMBER in (" + uniqueParcels.join() + ")"; //Query address points by parcel number - Update where clause - change array to string for where parameter
+        //Run another deferred query - Site addresses (occupants) by currently selected parcels
+        this.qtMailingLabelsOccupants.execute(this.qMailingLabelsOccupants, lang.hitch(this, function(results) {
+          //Format results array & remove duplicates
+          var unique_array_Occupants = this._MailingLabels_format4CSV(results.features, results.fieldAliases);
+          unique_array_Occupants.forEach(function(n) {
+            n.Name = 'Occupant'
+          }); //Add name field = Occupant -  Name: Occupant to array
+          unique_Occupants.resolve(unique_array_Occupants); //update deferred variable
+        }), function(error) { //lang.hitch
+          console.log(error); //error message for this.qtMailingLabelsOccupants.execute
+        }); //end deferred query for parcels by Groupaccount
 
-        return unique_Occupants;  //updated deferred variable
-       },  
+        return unique_Occupants; //updated deferred variable
+      },
 
-      _MailingLabels_UniqueGroupaccounts: function(currentResults){
-        var unique_Groupaccounts = new Deferred();  //deferred variable
-        var uniqueGROUPACCOUNT = this._MailingLabels_UniqueField(currentResults, 'GROUPACCOUNTNUMBER');  //get group account numbers by web service field name 'GROUPACCOUNTNUMBER'
-          if (uniqueGROUPACCOUNT.length>0) {  
-            //Update where clause & query for all related parcels by Groupaccount
-            this.qMailingLabelsGroupAccount.where = "Appraisal_account.GROUPACCOUNTNUMBER in (" + uniqueGROUPACCOUNT.join() + ")"; //change array to string for where parameter
-                //Run another deferred query - query for parcels by Groupaccount
-                this.qtMailingLabelsGroupAccount.execute(this.qMailingLabelsGroupAccount, lang.hitch(this,function(results){
-                  var unique_array_Groupaccount = this._MailingLabels_format4CSV(results.features, results.fieldAliases);  //Groupaccount parcels - format array & remove duplicates 
-                  unique_Groupaccounts.resolve(unique_array_Groupaccount);  //update deferred variable
-                }), function(error){ //lang.hitch
-                  console.log(error);  //error message for this.qtMailingLabelsGroupAccount.execute
-                });  //end deferred query for parcels by Groupaccount
-          } else {  //selected parcels have no GROUPACCOUNT numbers
-            unique_Groupaccounts.resolve([]);  //update deferred variable with empty array
-          }  //end GROUPACCOUNT length check
+      _MailingLabels_UniqueGroupaccounts: function(currentResults) {
+        var unique_Groupaccounts = new Deferred(); //deferred variable
+        var uniqueGROUPACCOUNT = this._MailingLabels_UniqueField(currentResults, 'GROUPACCOUNTNUMBER'); //get group account numbers by web service field name 'GROUPACCOUNTNUMBER'
+        if (uniqueGROUPACCOUNT.length > 0) {
+          //Update where clause & query for all related parcels by Groupaccount
+          this.qMailingLabelsGroupAccount.where = "Appraisal_account.GROUPACCOUNTNUMBER in (" + uniqueGROUPACCOUNT.join() + ")"; //change array to string for where parameter
+          //Run another deferred query - query for parcels by Groupaccount
+          this.qtMailingLabelsGroupAccount.execute(this.qMailingLabelsGroupAccount, lang.hitch(this, function(results) {
+            var unique_array_Groupaccount = this._MailingLabels_format4CSV(results.features, results.fieldAliases); //Groupaccount parcels - format array & remove duplicates 
+            unique_Groupaccounts.resolve(unique_array_Groupaccount); //update deferred variable
+          }), function(error) { //lang.hitch
+            console.log(error); //error message for this.qtMailingLabelsGroupAccount.execute
+          }); //end deferred query for parcels by Groupaccount
+        } else { //selected parcels have no GROUPACCOUNT numbers
+          unique_Groupaccounts.resolve([]); //update deferred variable with empty array
+        } //end GROUPACCOUNT length check
 
-        return unique_Groupaccounts;  //updated deferred variable
-       },  
+        return unique_Groupaccounts; //updated deferred variable
+      },
 
-      _MailingLabels_UniqueField: function(results, FIELD){
-        var listFIELD = [];  //Array to hold all FIELD values from results, includes duplicates
-           array.forEach(results, function(selected) {
-            var currentRecord = selected.attributes;
-            for(var index in currentRecord) {
-              //console.error( index + " : " + currentRecord[index]);
-              if (index == FIELD) {
-                listFIELD.push("'" + currentRecord[index] + "'");  // Add requested FIELD value for every record to array
-              }
-
+      _MailingLabels_UniqueField: function(results, FIELD) {
+        var listFIELD = []; //Array to hold all FIELD values from results, includes duplicates
+        array.forEach(results, function(selected) {
+          var currentRecord = selected.attributes;
+          for (var index in currentRecord) {
+            //console.error( index + " : " + currentRecord[index]);
+            if (index == FIELD) {
+              listFIELD.push("'" + currentRecord[index] + "'"); // Add requested FIELD value for every record to array
             }
-          });
+
+          }
+        });
 
         //Filter down to unique values (remove duplicates from simple array) - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
         var uniqueFIELD = listFIELD.filter(function(elem, index, self) {
-            return index == self.indexOf(elem);
+          return index == self.indexOf(elem);
         });
 
         return uniqueFIELD;
@@ -1120,7 +1127,7 @@ define([
       _MailingLabels_formatAliases: function(fieldNameArray) {
         var currentAliases = {};
         array.forEach(fieldNameArray, function(record) { //loop through multiple fields & Create array name:alias
-          currentAliases[record.name] = record.alias;  //key-value pairs, limit which fields to use (name)
+          currentAliases[record.name] = record.alias; //key-value pairs, limit which fields to use (name)
         });
         return currentAliases
       },
@@ -1130,12 +1137,12 @@ define([
         var currentResults = [];
         array.forEach(results, function(record) { //loop through all records & Create array of feature.attributes
           var currentRecord = record.attributes;
-          
-          Object.keys(aliases).forEach(function (key) {
-             currentRecord[aliases[key]] = currentRecord[key]  // add (duplicate) to array the values with an alias name - assign new key with value of prior key
-             //DON'T delete currentRecord[key] BECAUSE IT WILL ALSO REMOVE THE KEY FROM MAP LAYER VALUES & EXPORT PANEL RESULTS ARRAY
-             //COULD LOOP THROUGH currentResults BELOW AND REMOVE EXTRA KEYS, HOWEVER _MailingLabels_exportCSV WILL IGNORE EXTRA FIELDS
-             //delete currentRecord[key]  //  remove prior key (WARNING: if actual name & alias the same, field is deleted!!!)
+
+          Object.keys(aliases).forEach(function(key) {
+            currentRecord[aliases[key]] = currentRecord[key] // add (duplicate) to array the values with an alias name - assign new key with value of prior key
+            //DON'T delete currentRecord[key] BECAUSE IT WILL ALSO REMOVE THE KEY FROM MAP LAYER VALUES & EXPORT PANEL RESULTS ARRAY
+            //COULD LOOP THROUGH currentResults BELOW AND REMOVE EXTRA KEYS, HOWEVER _MailingLabels_exportCSV WILL IGNORE EXTRA FIELDS
+            //delete currentRecord[key]  //  remove prior key (WARNING: if actual name & alias the same, field is deleted!!!)
           });
 
           currentResults.push(currentRecord); //add formatted results to array
@@ -1143,99 +1150,101 @@ define([
 
         console.error('Total records: ', currentResults.length);
 
-        var unique_array = this._MailingLabels_format4CSV_noDups(currentResults);  //remove duplicates
-         return unique_array; 
+        var unique_array = this._MailingLabels_format4CSV_noDups(currentResults); //remove duplicates
+        return unique_array;
       },
 
       _MailingLabels_format4CSV_noDups: function(currentResults) {
         //Remove duplicates based on Address field only - last duplicate record is kept!!! 
         //http://www.tjcafferkey.me/remove-duplicates-from-array-of-objects/
-         var unique_array = [];  //Array for unique values - remove duplicates from results
-         var lookup  = {};
-     
-           for (var i in currentResults) {
-               lookup[currentResults[i]["Address"]] = currentResults[i];
-           }
-       
-           for (i in lookup) {
-               unique_array.push(lookup[i]);
-           }
-           console.error('Count with duplicates removed: ',unique_array.length);
+        var unique_array = []; //Array for unique values - remove duplicates from results
+        var lookup = {};
 
-           return unique_array; 
+        for (var i in currentResults) {
+          lookup[currentResults[i]["Address"]] = currentResults[i];
+        }
+
+        for (i in lookup) {
+          unique_array.push(lookup[i]);
+        }
+        console.error('Count with duplicates removed: ', unique_array.length);
+
+        return unique_array;
       },
 
       _MailingLabels_exportCSV: function(array) {
         //CSV Export Workaround - need 'jimu/CSVUtils' & CSVUtils (functions mixed in somehow to ... menu (_onBtnMenuClicked in SingleQueryResult.js), but don't know how to call)
         //function(filename, datas, columns) - see CSVUtils.js
-        CSVUtils.exportCSV('Mailing Labels', array, ['Name','Care Of','Address','City','State','Zip']);  //Missing fields will be dropped - same list for every CSV - make global variable of field names
+        CSVUtils.exportCSV('Mailing Labels', array, ['Name', 'Care Of', 'Address', 'City', 'State', 'Zip']); //Missing fields will be dropped - same list for every CSV - make global variable of field names
       },
 
       _MailingLabels_createButton: function(array) {
         //Create 'Mailing Labels' button that opens results as a CSV file   (see 'Export to CSV file' function - ..\jimu.js\CSVUtils.js)
-          //console.error(document.getElementById("Btn_MailingLabels") != null);  //same task = false
-          //Remove existing button
-          var element = document.getElementById("Btn_MailingLabels");
-          if (element !=null) {element.parentNode.removeChild(element)};
-          //console.error(dojo.byId("Btn_MailingLabels"));
-          
-          //Build button
-          var node1 = document.createElement("div");
-          var textnode1 = document.createTextNode("Mailing Labels (click for CSV file)"); 
-            node1.className = "jimu-btn";
-            node1.id = "Btn_MailingLabels";
-            //node1.style.backgroundColor = "#15a4fa";
-            //node1.style.background = "#518dca";
-            //node1.style.backgroundColor = "#518dca";
-            node1.style.display = "block";
-            node1.style.clear = "both";
-            node1.appendChild(textnode1); 
-          
-          //Build blank line
-          var node2 = document.createElement("div");
-          var br = document.createElement("br");
-              node1.style.display = "block";
-              node2.style.clear = "both";
-              node2.appendChild(br);
-              
-          //Array of available tasks & Array of user order of selected tasks
-          //Find element for button insertion by current object property domNode (from singleQueryResult)
-          //this._resultLayerInfos[#] - # is the order of which task has been run - need to use the current task index, which varies by the order tasks are run
-          //Find DOM object index number that contains the current taskIndex - deferred need lang.hitch
-          this._MailingLabels_findIndex(this._resultLayerInfos).then(lang.hitch(this,function(value){  
-            // Deferred success
-            //console.error('DOM Index: ', value);  //index
-            var theElement = this._resultLayerInfos[value].singleQueryResult.domNode.childNodes[1].childNodes[5];  //results-container
-            //To find element from initial Widget.html (this.<div>) see https://geonet.esri.com/message/564463?commentID=564463#comment-564463
-            //Add to panel
-            theElement.insertBefore(node2, theElement.childNodes[0]); //puts button into results-container, but scrolls with parcels 
-            theElement.insertBefore(node1, theElement.childNodes[0]); //puts blank line under button 
-            //Add click event to button - this.own(on(Node, 'click', lang.hitch(this, FUNCTION, param1, param2, etc)));
-            this.own(on(dojo.byId("Btn_MailingLabels"), 'click', lang.hitch(this, this._MailingLabels_exportCSV, array)));  //this.own(on(Node, 'click', lang.hitch(this, FUNCTION, param1, param2, etc)));
+        //console.error(document.getElementById("Btn_MailingLabels") != null);  //same task = false
+        //Remove existing button
+        var element = document.getElementById("Btn_MailingLabels");
+        if (element != null) {
+          element.parentNode.removeChild(element)
+        };
+        //console.error(dojo.byId("Btn_MailingLabels"));
 
-          }), function(error){ //lang.hitch
-            // Do something when the process errors out
-            alert(err);
-          }); //end deferred
+        //Build button
+        var node1 = document.createElement("div");
+        var textnode1 = document.createTextNode("Mailing Labels (click for CSV file)");
+        node1.className = "jimu-btn";
+        node1.id = "Btn_MailingLabels";
+        //node1.style.backgroundColor = "#15a4fa";
+        //node1.style.background = "#518dca";
+        //node1.style.backgroundColor = "#518dca";
+        node1.style.display = "block";
+        node1.style.clear = "both";
+        node1.appendChild(textnode1);
+
+        //Build blank line
+        var node2 = document.createElement("div");
+        var br = document.createElement("br");
+        node1.style.display = "block";
+        node2.style.clear = "both";
+        node2.appendChild(br);
+
+        //Array of available tasks & Array of user order of selected tasks
+        //Find element for button insertion by current object property domNode (from singleQueryResult)
+        //this._resultLayerInfos[#] - # is the order of which task has been run - need to use the current task index, which varies by the order tasks are run
+        //Find DOM object index number that contains the current taskIndex - deferred need lang.hitch
+        this._MailingLabels_findIndex(this._resultLayerInfos).then(lang.hitch(this, function(value) {
+          // Deferred success
+          //console.error('DOM Index: ', value);  //index
+          var theElement = this._resultLayerInfos[value].singleQueryResult.domNode.childNodes[1].childNodes[5]; //results-container
+          //To find element from initial Widget.html (this.<div>) see https://geonet.esri.com/message/564463?commentID=564463#comment-564463
+          //Add to panel
+          theElement.insertBefore(node2, theElement.childNodes[0]); //puts button into results-container, but scrolls with parcels 
+          theElement.insertBefore(node1, theElement.childNodes[0]); //puts blank line under button 
+          //Add click event to button - this.own(on(Node, 'click', lang.hitch(this, FUNCTION, param1, param2, etc)));
+          this.own(on(dojo.byId("Btn_MailingLabels"), 'click', lang.hitch(this, this._MailingLabels_exportCSV, array))); //this.own(on(Node, 'click', lang.hitch(this, FUNCTION, param1, param2, etc)));
+
+        }), function(error) { //lang.hitch
+          // Do something when the process errors out
+          alert(err);
+        }); //end deferred
       },
 
       _MailingLabels_findIndex: function(array1) {
-         var indexDom = new Deferred();
-         var currentTaskIndex = this.currentTaskIndex; //current task # being run (instead of using lang hitch)
-          //loop through each object looking for the currentTaskIndex = taskIndex & return object index number
-          //each object contains the results and task query #, need to find order user performed tasks to put button in correct location
-          array.forEach(array1, function(record, index) { //loop through all records
-              //console.error('Task Name: ', record.label, ' - Task Index: ', record.taskIndex, ' - DOM Index: ', index);
-              if (currentTaskIndex == record.taskIndex){
-                 //found the DOM index (order that the task (which has it's own index - this.currentTaskIndex) is being done by user) to place the Mailing Labels button
-                indexDom.resolve(index);
-              }
-          });
-          return indexDom;
+        var indexDom = new Deferred();
+        var currentTaskIndex = this.currentTaskIndex; //current task # being run (instead of using lang hitch)
+        //loop through each object looking for the currentTaskIndex = taskIndex & return object index number
+        //each object contains the results and task query #, need to find order user performed tasks to put button in correct location
+        array.forEach(array1, function(record, index) { //loop through all records
+          //console.error('Task Name: ', record.label, ' - Task Index: ', record.taskIndex, ' - DOM Index: ', index);
+          if (currentTaskIndex == record.taskIndex) {
+            //found the DOM index (order that the task (which has it's own index - this.currentTaskIndex) is being done by user) to place the Mailing Labels button
+            indexDom.resolve(index);
+          }
+        });
+        return indexDom;
 
       }
 
-	//end MJM mailing label functions
+      //end MJM mailing label functions
 
     });
   });
