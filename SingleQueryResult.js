@@ -23,8 +23,8 @@ define([
     'dojo/text!./SingleQueryResult.html',
     'dojo/_base/lang',
     'dojo/_base/query',
-     'esri/tasks/BufferParameters', //MJM
-     'esri/tasks/query',  //MJM
+    'esri/tasks/BufferParameters', //MJM
+    'esri/tasks/query', //MJM
     'dojo/_base/html',
     'dojo/_base/array',
     'dojo/Deferred',
@@ -98,26 +98,26 @@ define([
         this.featureActionManager = FeatureActionManager.getInstance();
         this.btnFeatureAction.title = window.jimuNls.featureActions.featureActions;
 
-          //MJM - Mailing Labels modification------------------------------------------------
-            //need to add EsriQuery, BufferParameters 
-            //Parcel Query parameters (https://developers.arcgis.com/javascript/3/jsapi/query-amd.html)
-            this.qtParcelQuery = new QueryTask("https://arcgisprod02.tacoma.lcl/arcgis/rest/services/PDS/MailingLabels/MapServer/1");
-            this.qParcelQuery = new EsriQuery();
-              this.qParcelQuery.outFields = ["TaxParcelNumber"];
-              this.qParcelQuery.returnGeometry = true;
-              this.qParcelQuery.outSpatialReference = this.map.spatialReference;  //new esri.SpatialReference({wkid: 102100});
+        //MJM - Mailing Labels modification------------------------------------------------
+        //need to add EsriQuery, BufferParameters 
+        //Parcel Query parameters (https://developers.arcgis.com/javascript/3/jsapi/query-amd.html)
+        this.qtParcelQuery = new QueryTask("https://arcgisprod02.tacoma.lcl/arcgis/rest/services/PDS/MailingLabels/MapServer/1");
+        this.qParcelQuery = new EsriQuery();
+        this.qParcelQuery.outFields = ["TaxParcelNumber"];
+        this.qParcelQuery.returnGeometry = true;
+        this.qParcelQuery.outSpatialReference = this.map.spatialReference; //new esri.SpatialReference({wkid: 102100});
 
-            //Buffer parcel parameters (https://developers.arcgis.com/javascript/3/jsapi/bufferparameters-amd.html)
-            this.paramsBuffer_Parcel = new BufferParameters();
-              this.paramsBuffer_Parcel.bufferSpatialReference = this.map.spatialReference;
-              this.paramsBuffer_Parcel.outSpatialReference = this.map.spatialReference;
-              this.paramsBuffer_Parcel.unionResults = true;
-              this.paramsBuffer_Parcel.geodesic = true;  //geometries are in geographic coordinate system
+        //Buffer parcel parameters (https://developers.arcgis.com/javascript/3/jsapi/bufferparameters-amd.html)
+        this.paramsBuffer_Parcel = new BufferParameters();
+        this.paramsBuffer_Parcel.bufferSpatialReference = this.map.spatialReference;
+        this.paramsBuffer_Parcel.outSpatialReference = this.map.spatialReference;
+        this.paramsBuffer_Parcel.unionResults = true;
+        this.paramsBuffer_Parcel.geodesic = true; //geometries are in geographic coordinate system
 
-            //Geometry Service
-            this.localGeometryService = new esri.tasks.GeometryService("https://arcgisprod02.tacoma.lcl/arcgis/rest/services/Utilities/Geometry/GeometryServer");
+        //Geometry Service
+        this.localGeometryService = new esri.tasks.GeometryService("https://arcgisprod02.tacoma.lcl/arcgis/rest/services/Utilities/Geometry/GeometryServer");
 
-          //End MJM Mailing Labels modification------------------------------------------------
+        //End MJM Mailing Labels modification------------------------------------------------
 
       },
 
@@ -182,7 +182,7 @@ define([
         }
       },
 
-      _emitFeaturesUpdate: function(){
+      _emitFeaturesUpdate: function() {
         this.emit('features-update', {
           taskIndex: this.currentAttrs.queryTr.taskIndex,
           features: this.currentAttrs.query.resultLayer.graphics
@@ -241,70 +241,70 @@ define([
         //MJM COMMENT OUT -> this.singleQueryLoader.executeQueryForFirstTime().then(callback, errorCallback);
 
         //MJM COMMENT OUT -> return def;
-          //START Mailing Labels here by manipulating where clause from "TaxParcelNumber =" to "TaxParcelNumber IN ()"
-          //  only if the current task contains 'Parcel Number' in name 
-          if (this.singleQueryLoader.currentAttrs.queryTr.textContent.search('Parcel Number')!=-1){
-            //debugger;   //In console type: keys(this) & values(this) http://anti-code.com/devtools-cheatsheet/
-            if (this.queryWidget.currentTaskSetting.spatialFilterByDrawing.searchDistance.cbx.checked) {
-              //buffer parcel list
-              myWhereClause = this._MailingLabels_manipulateWhereClause(this.singleQueryLoader.currentAttrs.query.where);  //manipulate where clause
-              var currentDistance = this.queryWidget.currentTaskSetting.spatialFilterByDrawing.searchDistance.numberTextBox._lastValueReported;  //update buffer distance
-              var currentUnit = this.queryWidget.currentTaskSetting.spatialFilterByDrawing.searchDistance.unitSelect._lastValueReported;  //update buffer units
+        //START Mailing Labels here by manipulating where clause from "TaxParcelNumber =" to "TaxParcelNumber IN ()"
+        //  only if the current task contains 'Parcel Number' in name 
+        if (this.singleQueryLoader.currentAttrs.queryTr.textContent.search('Parcel Number') != -1) {
+          //debugger;   //In console type: keys(this) & values(this) http://anti-code.com/devtools-cheatsheet/
+          if (this.queryWidget.currentTaskSetting.spatialFilterByDrawing.searchDistance.cbx.checked) {
+            //buffer parcel list
+            myWhereClause = this._MailingLabels_manipulateWhereClause(this.singleQueryLoader.currentAttrs.query.where); //manipulate where clause
+            var currentDistance = this.queryWidget.currentTaskSetting.spatialFilterByDrawing.searchDistance.numberTextBox._lastValueReported; //update buffer distance
+            var currentUnit = this.queryWidget.currentTaskSetting.spatialFilterByDrawing.searchDistance.unitSelect._lastValueReported; //update buffer units
 
-              //RUN QUERY WITH INITIAL PARCEL LIST
-              this._MailingLabels_bufferQuery(myWhereClause, currentDistance, currentUnit).then(lang.hitch(this,function(value){  
-                // Deferred - update success
-                this.singleQueryLoader.currentAttrs.query.where = value;  //update where clause
+            //RUN QUERY WITH INITIAL PARCEL LIST
+            this._MailingLabels_bufferQuery(myWhereClause, currentDistance, currentUnit).then(lang.hitch(this, function(value) {
+              // Deferred - update success
+              this.singleQueryLoader.currentAttrs.query.where = value; //update where clause
 
-                  //RUN QUERY WITH NEW PARCEL LIST - NEED TO DUPLICATE SUCCESS & ERROR FUNCTIONS TO KEEP SCOPE
-                  this.singleQueryLoader.executeQueryForFirstTime().then(lang.hitch(this, function(features) {
-                    var currentAttrs = this.getCurrentAttrs();
-                    var resultLayer = currentAttrs.query.resultLayer;
-                    if (!this.domNode) {
-                      return;
-                    }
-                    this.shelter.hide();
-                    var allCount = currentAttrs.query.allCount;
-                    this._updateNumSpan(allCount);
-                    if (allCount > 0) {
-                      this._addResultItems(features, resultLayer);
-                      this._addResultLayerToMap(resultLayer);
-                    }
-                    def.resolve(allCount);
-                  }),  function(err) {
-                    console.error(err);
-                    if (!this.domNode) {
-                      return;
-                    }
-                    this.shelter.hide();
-                    if (resultLayer) {
-                      this.map.removeLayer(resultLayer);
-                    }
-                    resultLayer = null;
-                    this._showQueryErrorMsg();
-                    def.reject(err);
-                  }); //end deferred query
-              }), function(err){ //lang.hitch
-                // Do something when the process errors out
-                alert(err);
-              }); //end deferred buffer parcel list
+              //RUN QUERY WITH NEW PARCEL LIST - NEED TO DUPLICATE SUCCESS & ERROR FUNCTIONS TO KEEP SCOPE
+              this.singleQueryLoader.executeQueryForFirstTime().then(lang.hitch(this, function(features) {
+                var currentAttrs = this.getCurrentAttrs();
+                var resultLayer = currentAttrs.query.resultLayer;
+                if (!this.domNode) {
+                  return;
+                }
+                this.shelter.hide();
+                var allCount = currentAttrs.query.allCount;
+                this._updateNumSpan(allCount);
+                if (allCount > 0) {
+                  this._addResultItems(features, resultLayer);
+                  this._addResultLayerToMap(resultLayer);
+                }
+                def.resolve(allCount);
+              }), function(err) {
+                console.error(err);
+                if (!this.domNode) {
+                  return;
+                }
+                this.shelter.hide();
+                if (resultLayer) {
+                  this.map.removeLayer(resultLayer);
+                }
+                resultLayer = null;
+                this._showQueryErrorMsg();
+                def.reject(err);
+              }); //end deferred query
+            }), function(err) { //lang.hitch
+              // Do something when the process errors out
+              alert(err);
+            }); //end deferred buffer parcel list
 
-              return def;
+            return def;
 
-            } else {
-              //no buffer requested
-              this.singleQueryLoader.currentAttrs.query.where = this._MailingLabels_manipulateWhereClause(this.singleQueryLoader.currentAttrs.query.where);  //manipulate where clause
-              this.singleQueryLoader.executeQueryForFirstTime().then(callback, errorCallback);  //execute query
-              return def;
-            }
-            
           } else {
-            //all other query tasks
-            this.singleQueryLoader.executeQueryForFirstTime().then(callback, errorCallback);
+            //no buffer requested
+            this.singleQueryLoader.currentAttrs.query.where = this._MailingLabels_manipulateWhereClause(this.singleQueryLoader.currentAttrs.query.where); //manipulate where clause
+            this.singleQueryLoader.executeQueryForFirstTime().then(callback, errorCallback); //execute query
             return def;
           }
 
-         //End Mailing Labels modifications------------------------------------------------------
+        } else {
+          //all other query tasks
+          this.singleQueryLoader.executeQueryForFirstTime().then(callback, errorCallback);
+          return def;
+        }
+
+        //End Mailing Labels modifications------------------------------------------------------
       },
 
       getResultLayer: function() {
@@ -613,7 +613,7 @@ define([
           var layerName = relationshipLayerInfo.name;
 
           this.relatedLayersSelect.addOption({
-            value: relationship.id + "",//should be a string
+            value: relationship.id + "", //should be a string
             label: layerName,
             relationship: relationship,
             relationshipLayerInfo: relationshipLayerInfo,
@@ -658,7 +658,7 @@ define([
           this.shelter.hide();
         });
         //var objectIds = this.currentAttrs.query.objectIds;
-        this.singleQueryLoader.getObjectIdsForAllRelatedRecordsAction().then(lang.hitch(this, function(objectIds){
+        this.singleQueryLoader.getObjectIdsForAllRelatedRecordsAction().then(lang.hitch(this, function(objectIds) {
           var def = this._queryRelatedRecords(url, objectIds, option.relationship.id);
           def.then(lang.hitch(this, function(response) {
             if (!this.domNode) {
@@ -1071,7 +1071,7 @@ define([
         var relationships = this._getCurrentRelationships();
         var objectIdField = this._getObjectIdField();
         if (objectIdField && features.length > 0 && relationships && relationships.length > 0 &&
-            this._isWebMapShowRelatedRecordsEnabled()) {
+          this._isWebMapShowRelatedRecordsEnabled()) {
           action = new BaseFeatureAction({
             iconClass: 'icon-show-related-record',
             icon: '',
@@ -1091,10 +1091,10 @@ define([
         return action;
       },
 
-      _isWebMapShowRelatedRecordsEnabled: function(){
+      _isWebMapShowRelatedRecordsEnabled: function() {
         //#2887
         var popupInfo = this.currentAttrs.config.popupInfo;
-        if(popupInfo.relatedRecordsInfo){
+        if (popupInfo.relatedRecordsInfo) {
           return popupInfo.relatedRecordsInfo.showRelatedRecords !== false;
         }
         return true;
@@ -1135,102 +1135,102 @@ define([
       //START MJM Mailing Label functions------------------------------------------------------
       _MailingLabels_manipulateWhereClause: function(whereClause) {
         //whereClause example: TaxParcelNumber = '2008070020 2008070030'
-        var whereClause2 = whereClause.replace(/,/g, " ");  //remove commas from string (leave space)
-            whereClause2 = whereClause2.replace(/'|"|“|”|‘|’/g, "");  //remove single-double quotes from string
-            //console.error(whereClause2);
-        var whereClauseObj = whereClause2.split(' = ');  //split field [0] from values [1]
+        var whereClause2 = whereClause.replace(/,/g, " "); //remove commas from string (leave space)
+        whereClause2 = whereClause2.replace(/'|"|“|”|‘|’/g, ""); //remove single-double quotes from string
+        //console.error(whereClause2);
+        var whereClauseObj = whereClause2.split(' = '); //split field [0] from values [1]
         //console.error('0 - ',whereClauseObj[0], ' 1 - ',whereClauseObj[1]);
 
-         var temp = "";
-         var theQuote = "'";
-         
-         string = '' + whereClauseObj[1];
-         splitstring = string.split(" ");
-        
-        
-         for (i = 0; i < splitstring.length; i++){
-          if (i==0) {
-           temp += theQuote + splitstring[i] + theQuote ;
-          } else {
-           temp += ", " + theQuote + splitstring[i] + theQuote ;
-          }
-         }
+        var temp = "";
+        var theQuote = "'";
 
-         //console.error(whereClauseObj[0] + " IN (" + temp + ")");
-         return whereClauseObj[0] + " IN (" + temp + ")";
+        string = '' + whereClauseObj[1];
+        splitstring = string.split(" ");
+
+
+        for (i = 0; i < splitstring.length; i++) {
+          if (i == 0) {
+            temp += theQuote + splitstring[i] + theQuote;
+          } else {
+            temp += ", " + theQuote + splitstring[i] + theQuote;
+          }
+        }
+
+        //console.error(whereClauseObj[0] + " IN (" + temp + ")");
+        return whereClauseObj[0] + " IN (" + temp + ")";
       },
 
       _MailingLabels_bufferQuery: function(whereClause, distance, unit) {
         //Query search box parcel list to get geometry, buffer, query with resulting geometry, and
         //send back a new list of parcels for where clause
         var newWhereClause = new Deferred();
-        this.qParcelQuery.where = whereClause;  //Update where clause with parcel list (modified) from search box
+        this.qParcelQuery.where = whereClause; //Update where clause with parcel list (modified) from search box
 
         //RUN PARCEL NUMBER QUERY 
-        this.qtParcelQuery.execute(this.qParcelQuery, lang.hitch(this,function(results){
+        this.qtParcelQuery.execute(this.qParcelQuery, lang.hitch(this, function(results) {
           //Results - parcel geometry
-          var parcelGeometry = [];  //Array to hold all geometry values from results
-          var parcelResults = results.features;  //All parcel feature results
+          var parcelGeometry = []; //Array to hold all geometry values from results
+          var parcelResults = results.features; //All parcel feature results
           for (var index in parcelResults) {
-            parcelGeometry.push(parcelResults[index].geometry);  //update geometry array
+            parcelGeometry.push(parcelResults[index].geometry); //update geometry array
           }
 
           //Update buffer geometry, distance, & unit 
           this.paramsBuffer_Parcel.geometries = parcelGeometry;
-          this.paramsBuffer_Parcel.distances = [ distance ];
+          this.paramsBuffer_Parcel.distances = [distance];
           //https://developers.arcgis.com/javascript/3/jsapi/geometryservice-amd.html
           //Menu values: "FEET" | "MILES" | "KILOMETERS" | "METERS" | "YARDS" | "NAUTICAL_MILES"
           //Geometry Service values: "UNIT_FOOT" | "UNIT_STATUTE_MILE" | "UNIT_KILOMETER" | "UNIT_METER" | "none - x3" | "UNIT_NAUTICAL_MILE"
           if (unit === 'FEET') {
-           this.paramsBuffer_Parcel.unit = esri.tasks.GeometryService["UNIT_FOOT"];
+            this.paramsBuffer_Parcel.unit = esri.tasks.GeometryService["UNIT_FOOT"];
           } else if (unit === 'MILES') {
-           this.paramsBuffer_Parcel.unit = esri.tasks.GeometryService["UNIT_STATUTE_MILE"];
+            this.paramsBuffer_Parcel.unit = esri.tasks.GeometryService["UNIT_STATUTE_MILE"];
           } else if (unit === 'KILOMETERS') {
-           this.paramsBuffer_Parcel.unit = esri.tasks.GeometryService["UNIT_KILOMETER"];
+            this.paramsBuffer_Parcel.unit = esri.tasks.GeometryService["UNIT_KILOMETER"];
           } else if (unit === 'METERS') {
-           this.paramsBuffer_Parcel.unit = esri.tasks.GeometryService["UNIT_METER"];
+            this.paramsBuffer_Parcel.unit = esri.tasks.GeometryService["UNIT_METER"];
           } else if (unit === 'NAUTICAL_MILES') {
-           this.paramsBuffer_Parcel.unit = esri.tasks.GeometryService["UNIT_NAUTICAL_MILE"];
+            this.paramsBuffer_Parcel.unit = esri.tasks.GeometryService["UNIT_NAUTICAL_MILE"];
           } else if (unit === 'YARDS') {
-           this.paramsBuffer_Parcel.unit = esri.tasks.GeometryService["UNIT_FOOT"];
-           this.paramsBuffer_Parcel.distances = [ distance * 3 ];  //no yards unit, so do the math to update distance instead
-          } 
-          
+            this.paramsBuffer_Parcel.unit = esri.tasks.GeometryService["UNIT_FOOT"];
+            this.paramsBuffer_Parcel.distances = [distance * 3]; //no yards unit, so do the math to update distance instead
+          }
+
           //RUN BUFFER (UNION RESULTING POLYGONS)
-          this.localGeometryService.buffer(this.paramsBuffer_Parcel, lang.hitch(this,function(results){
+          this.localGeometryService.buffer(this.paramsBuffer_Parcel, lang.hitch(this, function(results) {
             //Update query parameters - https://developers.arcgis.com/javascript/3/jsapi/query-amd.html
-            this.qParcelQuery.where = '';  //reset
-            this.qParcelQuery.geometry = results[0];  //use unioned parcel buffer polygon [0]
-            
+            this.qParcelQuery.where = ''; //reset
+            this.qParcelQuery.geometry = results[0]; //use unioned parcel buffer polygon [0]
+
             //RUN PARCEL QUERY WITH BUFFER POLYGON
-            this.qtParcelQuery.execute(this.qParcelQuery, lang.hitch(this,function(results){
+            this.qtParcelQuery.execute(this.qParcelQuery, lang.hitch(this, function(results) {
               var temp = "";
               var theQuote = "'";
-              var theParcels = results.features  //selected parcels
+              var theParcels = results.features //selected parcels
               for (var index in theParcels) {
-                if (index==0) {
-                 temp += theQuote + theParcels[index].attributes.TaxParcelNumber + theQuote ;
+                if (index == 0) {
+                  temp += theQuote + theParcels[index].attributes.TaxParcelNumber + theQuote;
                 } else {
-                 temp += ", " + theQuote + theParcels[index].attributes.TaxParcelNumber + theQuote ;
+                  temp += ", " + theQuote + theParcels[index].attributes.TaxParcelNumber + theQuote;
                 }
               }
-              newWhereClause.resolve("TaxParcelNumber IN (" + temp + ")");  //resolve deferred - new list of parcels within the original parcel(s) buffer for where clause
-            }), function(error){ //lang.hitch
-              console.log(error);  //error message for this.qtParcelQuery.execute (second time)
-            });  //end parcel buffer query
+              newWhereClause.resolve("TaxParcelNumber IN (" + temp + ")"); //resolve deferred - new list of parcels within the original parcel(s) buffer for where clause
+            }), function(error) { //lang.hitch
+              console.log(error); //error message for this.qtParcelQuery.execute (second time)
+            }); //end parcel buffer query
 
-          }), function(error){ //lang.hitch
-            console.log(error);  //error message for this.localGeometryService.buffer
-          });  //end parcel buffer
-            
-        }), function(error){ //lang.hitch
-          console.log(error);  //error message for this.qtParcelQuery.execute (first time)
-        });  //end query for parcel geometry
+          }), function(error) { //lang.hitch
+            console.log(error); //error message for this.localGeometryService.buffer
+          }); //end parcel buffer
 
-        return newWhereClause;  //deferred
+        }), function(error) { //lang.hitch
+          console.log(error); //error message for this.qtParcelQuery.execute (first time)
+        }); //end query for parcel geometry
+
+        return newWhereClause; //deferred
       }
 
-    //END MJM mailing label functions here ------------------------------------------------------      
+      //END MJM mailing label functions here ------------------------------------------------------      
 
     });
   });
