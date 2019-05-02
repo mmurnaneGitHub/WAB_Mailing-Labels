@@ -3,7 +3,7 @@ Mailing Labels Widget for https://wsitd03/website/labels/
 
 INSTRUCTIONS:
 
-   A. Copy Query folder to \widgets\Query.
+   A. Copy Query folder from previous app version to \widgets\Query.  Replace Widget.js & SingleQueryResult.js from this repository.
    
    B. Copy MapManager.js to \jimu.js\MapManager.js.
    
