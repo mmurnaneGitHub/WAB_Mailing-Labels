@@ -8,7 +8,7 @@ INSTRUCTIONS:
    B. Copy MapManager.js to \jimu.js\MapManager.js.
    
 
-Modification of ESRI default files:
+ ==================== Modification of ESRI default files  ==================== 
 
    A. Files Widget.js & SingleQueryResult.js from the \widgets\Query folder - See //MJM modifications.
    
