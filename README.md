@@ -5,9 +5,9 @@ Version 2.12
 
 INSTRUCTIONS:
 
-   A. Copy Query folder from previous app version to \widgets\Query.  Replace Widget.js & SingleQueryResult.js from this repository.
+   1. Copy Query folder from previous app version to \widgets\Query.  Replace Widget.js & SingleQueryResult.js from this repository.
    
-   B. Copy MapManager.js to \jimu.js\MapManager.js.
+   2. Copy MapManager.js to \jimu.js\MapManager.js.
    
 
  ==================== Modification of ESRI default files  ==================== 
