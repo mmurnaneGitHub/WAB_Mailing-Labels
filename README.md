@@ -13,10 +13,10 @@ Modification of ESRI default files:
    A. Files Widget.js & SingleQueryResult.js from the \widgets\Query folder - See //MJM modifications.
    
    B. File \jimu.js\MapManager.js - See //MJM modifications to change default layer visibity on web map.
-
- 
- 
+   
+   
+   
  FUTURE ENHANCEMENTS:
  - remove blank line in spreadsheet for first record
  - try to get task without using index number - Widget.js, _MailingLabels_findIndex, line ~1182
- - rename widget and update app config.json
+ - rename widget and update app config.json or test if all other ESRI query widget files are compatible.
