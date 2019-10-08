@@ -1,16 +1,18 @@
 # WAB_Mailing-Labels
 Mailing Labels Widget for https://wsitd03/website/labels/
 
-Version 2.12
+Version 2.13
 
 INSTRUCTIONS:
 
-   1. Copy Query folder from previous app version to \widgets\Query.  Replace Widget.js & SingleQueryResult.js from this repository.
+   1. Replace manifest.json, Widget.js, & SingleQueryResult.js in \widgets\QueryLabels.
    
    2. Copy MapManager.js to \jimu.js\MapManager.js.
    
+   3. Copy folder QueryLabels to \configs\QueryLabels.
+   
 
- ==================== Modification of ESRI default files  ==================== 
+ ==================== Modification of ESRI Query Widget default files  ==================== 
 
    A. Files Widget.js & SingleQueryResult.js from the \widgets\Query folder - See //MJM modifications.
    
@@ -21,4 +23,4 @@ INSTRUCTIONS:
  ==================== FUTURE ENHANCEMENTS ==================== 
  - Remove blank line in spreadsheet for first record.
  - Try to get task without using index number - Widget.js, _MailingLabels_findIndex, line ~1182.
- - Rename widget and update app config.json or test if all other ESRI query widget files are compatible.  Folder currently has over 140 files.
+ - Future updates: Test if all other ESRI Query Widget files are compatible.  Folder currently has over 140 files.
