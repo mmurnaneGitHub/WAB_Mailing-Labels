@@ -9,8 +9,6 @@ INSTRUCTIONS:
    
    2. Copy MapManager.js to \jimu.js\MapManager.js.
    
-   3. Copy folder QueryLabels to \configs\QueryLabels.
-   
 
  ==================== Modification of ESRI Query Widget default files  ==================== 
 
