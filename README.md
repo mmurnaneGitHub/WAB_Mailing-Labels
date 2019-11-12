@@ -19,7 +19,7 @@ INSTRUCTIONS:
    
    
  ==================== FUTURE ENHANCEMENTS ==================== 
- - QueryLabels: built from Esri Query Widget, update with Esri updates
+ - QueryLabels: built from Esri Query Widget, update with future Esri updates
  - Remove blank line in spreadsheet for first record.
  - Try to get task without using index number - Widget.js, _MailingLabels_findIndex, line ~1182.
  - Future updates: Test if all other ESRI Query Widget files are compatible.  Folder currently has over 140 files.
