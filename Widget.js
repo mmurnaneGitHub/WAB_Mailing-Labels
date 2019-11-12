@@ -15,39 +15,39 @@
 ///////////////////////////////////////////////////////////////////////////
 
 define([
-    'dojo/on',
-    'dojo/query',
-    'dojo/Deferred',
-    'dojo/_base/lang',
-    'dojo/_base/html',
-    'dojo/_base/array',
-    'dojo/promise/all',
-    'dojo/_base/declare',
-    'dijit/_WidgetsInTemplateMixin',
-    'jimu/utils',
-    'jimu/BaseWidget',
-    'jimu/CSVUtils', //MJM
-    'esri/tasks/query', //MJM
-    'esri/tasks/QueryTask', //MJM
-    'jimu/MapManager',
-    'jimu/filterUtils',
-    'jimu/dijit/Message',
-    'jimu/symbolUtils',
-    'esri/lang',
-    'esri/request',
-    'esri/symbols/jsonUtils',
-    'esri/layers/FeatureLayer',
-    'esri/dijit/PopupTemplate',
-    'esri/renderers/SimpleRenderer',
-    './TaskSetting',
-    './SingleQueryLoader',
-    './SingleQueryResult',
-    './utils',
-    'jimu/LayerInfos/LayerInfos',
-    'jimu/dijit/LoadingShelter',
-    'dijit/form/Select'
-  ],
-  function(on, query, Deferred, lang, html, array, all, declare, _WidgetsInTemplateMixin, jimuUtils, BaseWidget,
+  'dojo/on',
+  'dojo/query',
+  'dojo/Deferred',
+  'dojo/_base/lang',
+  'dojo/_base/html',
+  'dojo/_base/array',
+  'dojo/promise/all',
+  'dojo/_base/declare',
+  'dijit/_WidgetsInTemplateMixin',
+  'jimu/utils',
+  'jimu/BaseWidget',
+  'jimu/CSVUtils', //MJM
+  'esri/tasks/query', //MJM
+  'esri/tasks/QueryTask', //MJM
+  'jimu/MapManager',
+  'jimu/filterUtils',
+  'jimu/dijit/Message',
+  'jimu/symbolUtils',
+  'esri/lang',
+  'esri/request',
+  'esri/symbols/jsonUtils',
+  'esri/layers/FeatureLayer',
+  'esri/dijit/PopupTemplate',
+  'esri/renderers/SimpleRenderer',
+  './TaskSetting',
+  './SingleQueryLoader',
+  './SingleQueryResult',
+  './utils',
+  'jimu/LayerInfos/LayerInfos',
+  'jimu/dijit/LoadingShelter',
+  'dijit/form/Select'
+],
+  function (on, query, Deferred, lang, html, array, all, declare, _WidgetsInTemplateMixin, jimuUtils, BaseWidget,
     CSVUtils, EsriQuery, QueryTask,
     MapManager, FilterUtils, Message, jimuSymUtils, esriLang, esriRequest, symbolJsonUtils, FeatureLayer, PopupTemplate,
     SimpleRenderer, TaskSetting, SingleQueryLoader, SingleQueryResult, queryUtils, LayerInfos) {
@@ -80,7 +80,7 @@ define([
       3. if queryType is 3, it means that the query doesn't support objectIds.
       */
 
-      postMixInProperties: function() {
+      postMixInProperties: function () {
         this.inherited(arguments);
         this.layerInfosObj = LayerInfos.getInstanceSync();
         this.mapManager = MapManager.getInstance();
@@ -105,18 +105,18 @@ define([
         }
       },
 
-      _updateConfig: function() {
+      _updateConfig: function () {
         if (this.config && this.config.queries && this.config.queries.length > 0) {
-          array.forEach(this.config.queries, lang.hitch(this, function(singleConfig) {
+          array.forEach(this.config.queries, lang.hitch(this, function (singleConfig) {
             this._rebuildFilter(singleConfig.url, singleConfig.filter);
           }));
         }
       },
 
-      _setUrlForConfig: function() {
+      _setUrlForConfig: function () {
         //set url attribute of config if webMapLayerId is set
         if (this.config && this.config.queries && this.config.queries.length > 0) {
-          array.forEach(this.config.queries, lang.hitch(this, function(singleConfig) {
+          array.forEach(this.config.queries, lang.hitch(this, function (singleConfig) {
             if (singleConfig.webMapLayerId) {
               var layerInfoOrTableInfo = this.layerInfosObj.getLayerOrTableInfoById(singleConfig.webMapLayerId);
               if (layerInfoOrTableInfo) {
@@ -127,7 +127,7 @@ define([
         }
       },
 
-      _rebuildFilter: function(url, filter) {
+      _rebuildFilter: function (url, filter) {
         try {
           if (filter) {
             delete filter.expr;
@@ -140,7 +140,7 @@ define([
         }
       },
 
-      postCreate: function() {
+      postCreate: function () {
         this.inherited(arguments);
         this._initSelf();
         this._updateResultDetailUI();
@@ -168,7 +168,7 @@ define([
         //end Mailing Labels--------------------------------------------------
       },
 
-      onOpen: function() {
+      onOpen: function () {
         var info = this._getCurrentResultLayerInfo();
         var singleQueryResult = info && info.singleQueryResult;
         if (singleQueryResult) {
@@ -178,13 +178,13 @@ define([
         this.inherited(arguments);
       },
 
-      onActive: function() {
+      onActive: function () {
         //this.map.setInfoWindowOnClick(false);
         // this.mapManager.disableWebMapPopup();
         this._showTempLayers();
       },
 
-      onDeActive: function() {
+      onDeActive: function () {
         //deactivate method of DrawBox dijit will call this.map.setInfoWindowOnClick(true) inside
         // this.drawBox.deactivate();
         if (this.currentTaskSetting) {
@@ -194,7 +194,7 @@ define([
         this._hideTempLayers();
       },
 
-      onClose: function() {
+      onClose: function () {
         if (this.config.hideLayersAfterWidgetClosed) {
           this._hideAllLayers();
         }
@@ -203,25 +203,25 @@ define([
         this.inherited(arguments);
       },
 
-      destroy: function() {
+      destroy: function () {
         this._hideInfoWindow();
         this._removeResultLayerInfos(this._resultLayerInfos);
         this.inherited(arguments);
       },
 
-      _hideTempLayers: function() {
+      _hideTempLayers: function () {
         if (this.currentTaskSetting) {
           this.currentTaskSetting.hideTempLayers();
         }
       },
 
-      _showTempLayers: function() {
+      _showTempLayers: function () {
         if (this.currentTaskSetting) {
           this.currentTaskSetting.showTempLayers();
         }
       },
 
-      _initSelf: function() {
+      _initSelf: function () {
         var queries = this.config.queries;
 
         if (queries.length === 0) {
@@ -231,7 +231,7 @@ define([
         }
 
         //create query tasks
-        array.forEach(queries, lang.hitch(this, function(singleConfig, index) {
+        array.forEach(queries, lang.hitch(this, function (singleConfig, index) {
           var defaultIcon = this.folderUrl + "css/images/default_task_icon.png";
           queryUtils.dynamicUpdateConfigIcon(singleConfig, defaultIcon);
           var name = singleConfig.name;
@@ -279,7 +279,7 @@ define([
         }));
       },
 
-      _onTabHeaderClicked: function(event) {
+      _onTabHeaderClicked: function (event) {
         var target = event.target || event.srcElement;
         if (target === this.taskQueryItem) {
           var currentResultLayerInfo = this._getCurrentResultLayerInfo();
@@ -297,14 +297,14 @@ define([
         }
       },
 
-      _switchToTaskTab: function() {
+      _switchToTaskTab: function () {
         html.removeClass(this.resultQueryItem, 'selected');
         html.removeClass(this.resultTabView, 'selected');
         html.addClass(this.taskQueryItem, 'selected');
         html.addClass(this.taskTabView, 'selected');
       },
 
-      _switchToResultTab: function() {
+      _switchToResultTab: function () {
         this._updateResultDetailUI();
         html.removeClass(this.taskQueryItem, 'selected');
         html.removeClass(this.taskTabView, 'selected');
@@ -312,7 +312,7 @@ define([
         html.addClass(this.resultTabView, 'selected');
       },
 
-      _updateResultDetailUI: function() {
+      _updateResultDetailUI: function () {
         if (this._resultLayerInfos.length > 0) {
           html.removeClass(this.resultSection, this.hiddenClass);
           html.addClass(this.noresultSection, this.hiddenClass);
@@ -322,13 +322,13 @@ define([
         }
       },
 
-      _showTaskListPane: function() {
+      _showTaskListPane: function () {
         this._switchToTaskTab();
         html.setStyle(this.taskList, 'display', 'block');
         html.setStyle(this.taskSettingContainer, 'display', 'none');
       },
 
-      _showTaskSettingPane: function() {
+      _showTaskSettingPane: function () {
         this._switchToTaskTab();
         html.setStyle(this.taskList, 'display', 'none');
         html.setStyle(this.taskSettingContainer, 'display', 'block');
@@ -336,9 +336,9 @@ define([
 
       /*------------------------------task list------------------------------------*/
 
-      _onTaskListClicked: function(event) {
+      _onTaskListClicked: function (event) {
         var target = event.target || event.srcElement;
-        var tr = jimuUtils.getAncestorDom(target, lang.hitch(this, function(dom) {
+        var tr = jimuUtils.getAncestorDom(target, lang.hitch(this, function (dom) {
           return html.hasClass(dom, 'single-task');
         }), 10);
 
@@ -349,9 +349,9 @@ define([
         this._onClickTaskTr(tr);
       },
 
-      _onClickTaskTr: function(tr) {
+      _onClickTaskTr: function (tr) {
         //this._getLayerInfoAndServiceInfo(tr).then(lang.hitch(this, function(response){
-        this._getLayerInfoAndRelationshipLayerInfos(tr).then(lang.hitch(this, function(response) {
+        this._getLayerInfoAndRelationshipLayerInfos(tr).then(lang.hitch(this, function (response) {
           var layerInfo = response.layerInfo;
           //var serviceInfo = response.serviceInfo;
           var relationshipLayerInfos = response.relationshipLayerInfos;
@@ -388,10 +388,10 @@ define([
             map: this.map,
             currentAttrs: currentAttrs,
             layerInfosObj: this.layerInfosObj,
-            onBack: lang.hitch(this, function() {
+            onBack: lang.hitch(this, function () {
               this._showTaskListPane();
             }),
-            onApply: lang.hitch(this, function(currentAttrs) {
+            onApply: lang.hitch(this, function (currentAttrs) {
               this._onBtnApplyClicked(currentAttrs);
             })
           });
@@ -422,18 +422,18 @@ define([
 
 
 
-        }), lang.hitch(this, function(err) {
+        }), lang.hitch(this, function (err) {
           console.error("can't get layerInfo", err);
 
         }));
       },
 
-      _getLayerInfoAndServiceInfo: function(tr) {
+      _getLayerInfoAndServiceInfo: function (tr) {
         var def = new Deferred();
         var layerDef = this._getLayerInfo(tr);
         var serviceDef = this._getServiceInfo(tr);
         this.shelter.show();
-        all([layerDef, serviceDef]).then(lang.hitch(this, function(results) {
+        all([layerDef, serviceDef]).then(lang.hitch(this, function (results) {
           if (!this.domNode) {
             return;
           }
@@ -444,7 +444,7 @@ define([
             layerInfo: tr.layerInfo,
             serviceInfo: tr.serviceInfo
           });
-        }), lang.hitch(this, function(err) {
+        }), lang.hitch(this, function (err) {
           console.error(err);
           if (!this.domNode) {
             return;
@@ -460,13 +460,13 @@ define([
         return def;
       },
 
-      _getLayerInfoAndRelationshipLayerInfos: function(tr) {
+      _getLayerInfoAndRelationshipLayerInfos: function (tr) {
         var def = new Deferred();
         this.shelter.show();
         var layerDef = this._getLayerInfo(tr);
-        layerDef.then(lang.hitch(this, function(layerInfo) {
+        layerDef.then(lang.hitch(this, function (layerInfo) {
           tr.layerInfo = layerInfo;
-          this._getRelationshipLayerInfos(tr).then(lang.hitch(this, function(relationshipLayerInfos) {
+          this._getRelationshipLayerInfos(tr).then(lang.hitch(this, function (relationshipLayerInfos) {
             if (!this.domNode) {
               return;
             }
@@ -490,14 +490,14 @@ define([
               relationshipLayerInfos: relationshipLayerInfos,
               relationshipPopupTemplates: relationshipPopupTemplates
             });
-          }), lang.hitch(this, function(err) {
+          }), lang.hitch(this, function (err) {
             if (!this.domNode) {
               return;
             }
             this.shelter.hide();
             def.reject(err);
           }));
-        }), lang.hitch(this, function(err) {
+        }), lang.hitch(this, function (err) {
           if (!this.domNode) {
             return;
           }
@@ -508,7 +508,7 @@ define([
       },
 
       //get layer definition
-      _getLayerInfo: function(tr) {
+      _getLayerInfo: function (tr) {
         var def = new Deferred();
         if (tr.layerInfo) {
           def.resolve(tr.layerInfo);
@@ -521,10 +521,10 @@ define([
             },
             handleAs: 'json',
             callbackParamName: 'callback'
-          }).then(lang.hitch(this, function(layerInfo) {
+          }).then(lang.hitch(this, function (layerInfo) {
             tr.layerInfo = layerInfo;
             def.resolve(layerInfo);
-          }), lang.hitch(this, function(err) {
+          }), lang.hitch(this, function (err) {
             def.reject(err);
           }));
         }
@@ -532,7 +532,7 @@ define([
       },
 
       //get meta data of MapServer or FeatureServer
-      _getServiceInfo: function(tr) {
+      _getServiceInfo: function (tr) {
         var def = new Deferred();
         if (tr.serviceInfo) {
           def.resolve(tr.serviceInfo);
@@ -546,10 +546,10 @@ define([
             },
             handleAs: 'json',
             callbackParamName: 'callback'
-          }).then(lang.hitch(this, function(serviceInfo) {
+          }).then(lang.hitch(this, function (serviceInfo) {
             tr.serviceInfo = serviceInfo;
             def.resolve(serviceInfo);
-          }), lang.hitch(this, function(err) {
+          }), lang.hitch(this, function (err) {
             def.reject(err);
           }));
         }
@@ -557,7 +557,7 @@ define([
       },
 
       //get relationship layers definition
-      _getRelationshipLayerInfos: function(tr) {
+      _getRelationshipLayerInfos: function (tr) {
         var def = new Deferred();
         if (tr.relationshipLayerInfos) {
           def.resolve(tr.relationshipLayerInfos);
@@ -567,7 +567,7 @@ define([
           if (relationships && relationships.length > 0) {
             var layerUrl = tr.singleConfig.url;
             var serviceUrl = this._getServiceUrlByLayerUrl(layerUrl);
-            var defs = array.map(relationships, lang.hitch(this, function(relationship) {
+            var defs = array.map(relationships, lang.hitch(this, function (relationship) {
               var url = serviceUrl + "/" + relationship.relatedTableId;
               return esriRequest({
                 url: url,
@@ -578,13 +578,13 @@ define([
                 callbackParamName: 'callback'
               });
             }));
-            all(defs).then(lang.hitch(this, function(results) {
+            all(defs).then(lang.hitch(this, function (results) {
               tr.relationshipLayerInfos = {};
-              array.forEach(relationships, lang.hitch(this, function(relationship, index) {
+              array.forEach(relationships, lang.hitch(this, function (relationship, index) {
                 tr.relationshipLayerInfos[relationship.relatedTableId] = results[index];
               }));
               def.resolve(tr.relationshipLayerInfos);
-            }), lang.hitch(this, function(err) {
+            }), lang.hitch(this, function (err) {
               tr.relationshipLayerInfos = null;
               def.reject(err);
             }));
@@ -596,13 +596,13 @@ define([
         return def;
       },
 
-      _getServiceUrlByLayerUrl: function(layerUrl) {
+      _getServiceUrlByLayerUrl: function (layerUrl) {
         var lastIndex = layerUrl.lastIndexOf("/");
         var serviceUrl = layerUrl.slice(0, lastIndex);
         return serviceUrl;
       },
 
-      _getPopupInfo: function(layerDefinition, config) {
+      _getPopupInfo: function (layerDefinition, config) {
         var result = null;
         var defaultPopupInfo = queryUtils.getDefaultPopupInfo(layerDefinition, false, false);
         result = defaultPopupInfo;
@@ -658,7 +658,7 @@ define([
       /*------------------------------task list------------------------------------*/
 
       //start to query
-      _onBtnApplyClicked: function(currentAttrs) {
+      _onBtnApplyClicked: function (currentAttrs) {
         //we should enable web map popup here
         this.mapManager.enableWebMapPopup();
 
@@ -687,7 +687,7 @@ define([
           label: queryName,
           currentAttrs: currentAttrs,
           queryWidget: this,
-          onBack: lang.hitch(this, function() {
+          onBack: lang.hitch(this, function () {
             this._switchToResultTab();
           })
         });
@@ -697,7 +697,7 @@ define([
         //we should put singleQueryResult into the dom tree when _onSingleQueryFinished is called
         //singleQueryResult.placeAt(this.singleResultDetails);
 
-        singleQueryResult.executeQueryForFirstTime().then(lang.hitch(this, function( /*allCount*/ ) {
+        singleQueryResult.executeQueryForFirstTime().then(lang.hitch(this, function ( /*allCount*/) {
           if (!this.domNode) {
             return;
           }
@@ -708,7 +708,7 @@ define([
           // }
           this._onSingleQueryFinished(singleQueryResult, queryName);
           this._updateResultDetailUI();
-        }), lang.hitch(this, function(err) {
+        }), lang.hitch(this, function (err) {
           console.error(err);
           if (!this.domNode) {
             return;
@@ -718,14 +718,14 @@ define([
         }));
       },
 
-      _getBestQueryName: function(queryName) {
+      _getBestQueryName: function (queryName) {
         if (queryName) {
           queryName += " _" + this.nls.queryResult;
         } else {
           queryName += this.nls.queryResult;
         }
         var finalName = queryName;
-        var allNames = array.map(this.map.graphicsLayerIds, lang.hitch(this, function(glId) {
+        var allNames = array.map(this.map.graphicsLayerIds, lang.hitch(this, function (glId) {
           var layer = this.map.getLayer(glId);
           return layer.name;
         }));
@@ -738,7 +738,7 @@ define([
       },
 
       //create a FeatureLayer
-      _createNewResultLayer: function(currentAttrs, queryName) {
+      _createNewResultLayer: function (currentAttrs, queryName) {
         var resultLayer = null;
         var renderer = null;
         var taskIndex = currentAttrs.queryTr.taskIndex;
@@ -763,7 +763,7 @@ define([
         //only keep necessary fields
         var singleQueryLoader = new SingleQueryLoader(this.map, currentAttrs);
         var necessaryFieldNames = singleQueryLoader.getOutputFields();
-        layerInfo.fields = array.filter(layerInfo.fields, lang.hitch(this, function(fieldInfo) {
+        layerInfo.fields = array.filter(layerInfo.fields, lang.hitch(this, function (fieldInfo) {
           return necessaryFieldNames.indexOf(fieldInfo.name) >= 0;
         }));
         var featureCollection = {
@@ -802,7 +802,7 @@ define([
 
       /*---------------------------query result list-------------------------------*/
 
-      _onSingleQueryFinished: function(singleQueryResult, queryName) {
+      _onSingleQueryFinished: function (singleQueryResult, queryName) {
         this.currentTaskSetting.onGetQueryResponse();
         singleQueryResult.placeAt(this.singleResultDetails);
         this._hideAllSingleQueryResultDijits();
@@ -831,18 +831,16 @@ define([
         this._updateResultDetailUI();
 
         this._MailingLabelsStart(singleQueryResult, queryName, taskIndex); //MJM - START MAILING LABELS!!!!!
-        //console.error(singleQueryResult, ' - ', queryName, ' - ',  taskIndex);
-
       },
 
-      _onResultLayerSelectChanged: function() {
+      _onResultLayerSelectChanged: function () {
         var resultLayerInfo = this._getCurrentResultLayerInfo();
         if (resultLayerInfo) {
           this._showResultLayerInfo(resultLayerInfo);
         }
       },
 
-      _getCurrentResultLayerInfo: function() {
+      _getCurrentResultLayerInfo: function () {
         var resultLayerInfo = null;
         var value = this.resultLayersSelect.get('value');
         if (value) {
@@ -851,23 +849,23 @@ define([
         return resultLayerInfo;
       },
 
-      _hideAllLayers: function( /*optional*/ ignoredSingleQueryResult) {
+      _hideAllLayers: function ( /*optional*/ ignoredSingleQueryResult) {
         var dijits = this._getAllSingleQueryResultDijits();
-        array.forEach(dijits, lang.hitch(this, function(singleQueryResult) {
+        array.forEach(dijits, lang.hitch(this, function (singleQueryResult) {
           if (singleQueryResult && singleQueryResult !== ignoredSingleQueryResult) {
             singleQueryResult.hideLayer();
           }
         }));
       },
 
-      _removeResultLayerInfosByTaskIndex: function(taskIndex) {
+      _removeResultLayerInfosByTaskIndex: function (taskIndex) {
         var resultLayerInfos = this._getResultLayerInfosByTaskIndex(taskIndex);
         this._removeResultLayerInfos(resultLayerInfos);
       },
 
-      _getResultLayerInfoByValue: function(value) {
+      _getResultLayerInfoByValue: function (value) {
         var resultLayerInfo = null;
-        array.some(this._resultLayerInfos, lang.hitch(this, function(item) {
+        array.some(this._resultLayerInfos, lang.hitch(this, function (item) {
           if (item.value === value) {
             resultLayerInfo = item;
             return true;
@@ -878,17 +876,17 @@ define([
         return resultLayerInfo;
       },
 
-      _getResultLayerInfosByTaskIndex: function(taskIndex) {
+      _getResultLayerInfosByTaskIndex: function (taskIndex) {
         var resultLayerInfos = this._resultLayerInfos;
-        resultLayerInfos = array.filter(resultLayerInfos, lang.hitch(this, function(resultLayerInfo) {
+        resultLayerInfos = array.filter(resultLayerInfos, lang.hitch(this, function (resultLayerInfo) {
           return resultLayerInfo.taskIndex === taskIndex;
         }));
         return resultLayerInfos;
       },
 
-      _removeResultLayerInfoByValues: function(values) {
+      _removeResultLayerInfoByValues: function (values) {
         var indexArray = [];
-        array.forEach(this._resultLayerInfos, lang.hitch(this, function(resultLayerInfo, index) {
+        array.forEach(this._resultLayerInfos, lang.hitch(this, function (resultLayerInfo, index) {
           if (values.indexOf(resultLayerInfo.value) >= 0) {
             indexArray.push(index);
             if (resultLayerInfo.singleQueryResult && resultLayerInfo.singleQueryResult.domNode) {
@@ -898,7 +896,7 @@ define([
           }
         }));
         indexArray.reverse();
-        array.forEach(indexArray, lang.hitch(this, function(index) {
+        array.forEach(indexArray, lang.hitch(this, function (index) {
           this._resultLayerInfos.splice(index, 1);
         }));
         this.resultLayersSelect.removeOption(values);
@@ -915,18 +913,18 @@ define([
         this._updateResultDetailUI();
       },
 
-      _removeResultLayerInfos: function(resultLayerInfos) {
-        var values = array.map(resultLayerInfos, lang.hitch(this, function(resultLayerInfo) {
+      _removeResultLayerInfos: function (resultLayerInfos) {
+        var values = array.map(resultLayerInfos, lang.hitch(this, function (resultLayerInfo) {
           return resultLayerInfo.value;
         }));
         return this._removeResultLayerInfoByValues(values);
       },
 
-      _getAllSingleQueryResultDijits: function() {
+      _getAllSingleQueryResultDijits: function () {
         var dijits = [];
 
         if (this._resultLayerInfos && this._resultLayerInfos.length > 0) {
-          array.forEach(this._resultLayerInfos, lang.hitch(this, function(resultLayerInfo) {
+          array.forEach(this._resultLayerInfos, lang.hitch(this, function (resultLayerInfo) {
             if (resultLayerInfo && resultLayerInfo.singleQueryResult) {
               dijits.push(resultLayerInfo.singleQueryResult);
             }
@@ -936,14 +934,14 @@ define([
         return dijits;
       },
 
-      _hideAllSingleQueryResultDijits: function() {
+      _hideAllSingleQueryResultDijits: function () {
         var dijits = this._getAllSingleQueryResultDijits();
-        array.forEach(dijits, lang.hitch(this, function(dijit) {
+        array.forEach(dijits, lang.hitch(this, function (dijit) {
           html.setStyle(dijit.domNode, 'display', 'none');
         }));
       },
 
-      _showResultLayerInfo: function(resultLayerInfo) {
+      _showResultLayerInfo: function (resultLayerInfo) {
         this._hideAllSingleQueryResultDijits();
         var singleQueryResult = resultLayerInfo.singleQueryResult;
         this._hideAllLayers(singleQueryResult);
@@ -954,9 +952,9 @@ define([
         }
       },
 
-      removeSingleQueryResult: function(singleQueryResult) {
+      removeSingleQueryResult: function (singleQueryResult) {
         var value = null;
-        array.some(this._resultLayerInfos, lang.hitch(this, function(resultLayerInfo) {
+        array.some(this._resultLayerInfos, lang.hitch(this, function (resultLayerInfo) {
           if (resultLayerInfo.singleQueryResult === singleQueryResult) {
             value = resultLayerInfo.value;
             return true;
@@ -969,15 +967,15 @@ define([
         }
       },
 
-      _onShowRelatedRecords: function() {
+      _onShowRelatedRecords: function () {
         html.addClass(this.resultLayersSelectDiv, this.hiddenClass);
       },
 
-      _onHideRelatedRecords: function() {
+      _onHideRelatedRecords: function () {
         html.removeClass(this.resultLayersSelectDiv, this.hiddenClass);
       },
 
-      _onFeaturesUpdate: function(args) {
+      _onFeaturesUpdate: function (args) {
         var taskIndex = args.taskIndex;
         var features = args.features;
         try {
@@ -991,17 +989,17 @@ define([
 
       /*-------------------------common functions----------------------------------*/
 
-      _isImageServiceLayer: function(url) {
+      _isImageServiceLayer: function (url) {
         return (url.indexOf('/ImageServer') > -1);
       },
 
-      _showQueryErrorMsg: function( /* optional */ msg) {
+      _showQueryErrorMsg: function ( /* optional */ msg) {
         new Message({
           message: msg || this.nls.queryError
         });
       },
 
-      _hideInfoWindow: function() {
+      _hideInfoWindow: function () {
         if (this.map && this.map.infoWindow) {
           this.map.infoWindow.hide();
           if (typeof this.map.infoWindow.setFeatures === 'function') {
@@ -1011,7 +1009,7 @@ define([
       },
 
       //MJM - START Mailing Label functions------------------------------------------------------
-      _MailingLabelsStart: function(singleQueryResult, queryName, taskIndex) {
+      _MailingLabelsStart: function (singleQueryResult, queryName, taskIndex) {
         this.currentTaskIndex = taskIndex; //Update current task index for Mailing Label button placement
         var currentFields = singleQueryResult.currentAttrs.query.resultLayer.fields; //field names and aliases
         var currentResults = singleQueryResult.currentAttrs.query.resultLayer.graphics; //selected records results - graphics Array
@@ -1021,7 +1019,7 @@ define([
           //Javascript 'includes' works in Chrome, but not IE - used search('Taxpayer')!=-1 instead
           //OCCUPANT ONLY RECORDS---------------------------------------------------------------------------
           var unique_array_Occupants = this._MailingLabels_format4CSV(currentResults, currentAliases); //Unique occupants - format for CSV with alias fields and duplicates removed (probably all unique)
-          unique_array_Occupants.forEach(function(n) {
+          unique_array_Occupants.forEach(function (n) {
             n.Name = 'Occupant'
           }); //Add name field = Occupant -  Name: Occupant to array 
           this._MailingLabels_createButton(unique_array_Occupants); //Create 'Mailing Labels' button for unique occupants
@@ -1035,24 +1033,24 @@ define([
             var theOccupants = this._MailingLabels_UniqueOccupants(currentResults); //Deferred to find occupants [0]
             var theGroupaccounts = this._MailingLabels_UniqueGroupaccounts(currentResults); //Deferred to find groupaccount parcels [1]
             promises = all([theOccupants, theGroupaccounts]); //Use Promises so all arrays are done & current before using - https://developers.arcgis.com/javascript/3/jssamples/query_deferred_list.html
-            promises.then(lang.hitch(this, function(results) {
+            promises.then(lang.hitch(this, function (results) {
               var array_Occupants_Taxpayer_Groupaccount = results[0].concat(unique_array_Taxpayer, results[1]); // Merges arrays  
               var unique_array_Occupants_Taxpayer_Groupaccount = this._MailingLabels_format4CSV_noDups(array_Occupants_Taxpayer_Groupaccount); //Remove duplicates
               //Create 'Mailing Labels' button that opens results as a CSV file   (see 'Export to CSV file' function - ..\jimu.js\CSVUtils.js)
               this._MailingLabels_createButton(unique_array_Occupants_Taxpayer_Groupaccount);
-            }), function(error) { //lang.hitch
+            }), function (error) { //lang.hitch
               console.log(error); //error message
             }); //end deferred
           } else {
             //Combine taxpayers & group accounts
             var theGroupaccounts = this._MailingLabels_UniqueGroupaccounts(currentResults); //Deferred to find groupaccount parcels [0]
             promises = all([theGroupaccounts]); //Use Promises so all arrays are done & current before using - https://developers.arcgis.com/javascript/3/jssamples/query_deferred_list.html
-            promises.then(lang.hitch(this, function(results) {
+            promises.then(lang.hitch(this, function (results) {
               var array_Taxpayer_Groupaccount = results[0].concat(unique_array_Taxpayer); // Merges arrays  
               var unique_array_Taxpayer_Groupaccount = this._MailingLabels_format4CSV_noDups(array_Taxpayer_Groupaccount); //Remove duplicates
               //Create 'Mailing Labels' button that opens results as a CSV file   (see 'Export to CSV file' function - ..\jimu.js\CSVUtils.js)
               this._MailingLabels_createButton(unique_array_Taxpayer_Groupaccount);
-            }), function(error) { //lang.hitch
+            }), function (error) { //lang.hitch
               console.log(error); //error message
             }); //end deferred
 
@@ -1062,38 +1060,38 @@ define([
 
       },
 
-      _MailingLabels_UniqueOccupants: function(currentResults) {
+      _MailingLabels_UniqueOccupants: function (currentResults) {
         //Taxpayer & Occupant selected - use selected unique parcel numbers to select address points
         //Assumption: address points have correct parcel number, so no need to do a geographic search when attribute query will work
         var unique_Occupants = new Deferred(); //deferred variable
         var uniqueParcels = this._MailingLabels_UniqueField(currentResults, 'TaxParcelNumber'); //get unique parcel numbers
         this.qMailingLabelsOccupants.where = "PARCELNUMBER in (" + uniqueParcels.join() + ")"; //Query address points by parcel number - Update where clause - change array to string for where parameter
         //Run another deferred query - Site addresses (occupants) by currently selected parcels
-        this.qtMailingLabelsOccupants.execute(this.qMailingLabelsOccupants, lang.hitch(this, function(results) {
+        this.qtMailingLabelsOccupants.execute(this.qMailingLabelsOccupants, lang.hitch(this, function (results) {
           //Format results array & remove duplicates
           var unique_array_Occupants = this._MailingLabels_format4CSV(results.features, results.fieldAliases);
-          unique_array_Occupants.forEach(function(n) {
+          unique_array_Occupants.forEach(function (n) {
             n.Name = 'Occupant'
           }); //Add name field = Occupant -  Name: Occupant to array
           unique_Occupants.resolve(unique_array_Occupants); //update deferred variable
-        }), function(error) { //lang.hitch
+        }), function (error) { //lang.hitch
           console.log(error); //error message for this.qtMailingLabelsOccupants.execute
         }); //end deferred query for parcels by Groupaccount
 
         return unique_Occupants; //updated deferred variable
       },
 
-      _MailingLabels_UniqueGroupaccounts: function(currentResults) {
+      _MailingLabels_UniqueGroupaccounts: function (currentResults) {
         var unique_Groupaccounts = new Deferred(); //deferred variable
         var uniqueGROUPACCOUNT = this._MailingLabels_UniqueField(currentResults, 'GROUPACCOUNTNUMBER'); //get group account numbers by web service field name 'GROUPACCOUNTNUMBER'
         if (uniqueGROUPACCOUNT.length > 0) {
           //Update where clause & query for all related parcels by Groupaccount
           this.qMailingLabelsGroupAccount.where = "Appraisal_account.GROUPACCOUNTNUMBER in (" + uniqueGROUPACCOUNT.join() + ")"; //change array to string for where parameter
           //Run another deferred query - query for parcels by Groupaccount
-          this.qtMailingLabelsGroupAccount.execute(this.qMailingLabelsGroupAccount, lang.hitch(this, function(results) {
+          this.qtMailingLabelsGroupAccount.execute(this.qMailingLabelsGroupAccount, lang.hitch(this, function (results) {
             var unique_array_Groupaccount = this._MailingLabels_format4CSV(results.features, results.fieldAliases); //Groupaccount parcels - format array & remove duplicates 
             unique_Groupaccounts.resolve(unique_array_Groupaccount); //update deferred variable
-          }), function(error) { //lang.hitch
+          }), function (error) { //lang.hitch
             console.log(error); //error message for this.qtMailingLabelsGroupAccount.execute
           }); //end deferred query for parcels by Groupaccount
         } else { //selected parcels have no GROUPACCOUNT numbers
@@ -1103,9 +1101,9 @@ define([
         return unique_Groupaccounts; //updated deferred variable
       },
 
-      _MailingLabels_UniqueField: function(results, FIELD) {
+      _MailingLabels_UniqueField: function (results, FIELD) {
         var listFIELD = []; //Array to hold all FIELD values from results, includes duplicates
-        array.forEach(results, function(selected) {
+        array.forEach(results, function (selected) {
           var currentRecord = selected.attributes;
           for (var index in currentRecord) {
             //console.error( index + " : " + currentRecord[index]);
@@ -1117,28 +1115,28 @@ define([
         });
 
         //Filter down to unique values (remove duplicates from simple array) - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-        var uniqueFIELD = listFIELD.filter(function(elem, index, self) {
+        var uniqueFIELD = listFIELD.filter(function (elem, index, self) {
           return index == self.indexOf(elem);
         });
 
         return uniqueFIELD;
       },
 
-      _MailingLabels_formatAliases: function(fieldNameArray) {
+      _MailingLabels_formatAliases: function (fieldNameArray) {
         var currentAliases = {};
-        array.forEach(fieldNameArray, function(record) { //loop through multiple fields & Create array name:alias
+        array.forEach(fieldNameArray, function (record) { //loop through multiple fields & Create array name:alias
           currentAliases[record.name] = record.alias; //key-value pairs, limit which fields to use (name)
         });
         return currentAliases
       },
 
-      _MailingLabels_format4CSV: function(results, aliases) {
+      _MailingLabels_format4CSV: function (results, aliases) {
         //Create CSV-style array of with array of results records and array of alias names
         var currentResults = [];
-        array.forEach(results, function(record) { //loop through all records & Create array of feature.attributes
+        array.forEach(results, function (record) { //loop through all records & Create array of feature.attributes
           var currentRecord = record.attributes;
 
-          Object.keys(aliases).forEach(function(key) {
+          Object.keys(aliases).forEach(function (key) {
             currentRecord[aliases[key]] = currentRecord[key] // add (duplicate) to array the values with an alias name - assign new key with value of prior key
             //DON'T delete currentRecord[key] BECAUSE IT WILL ALSO REMOVE THE KEY FROM MAP LAYER VALUES & EXPORT PANEL RESULTS ARRAY
             //COULD LOOP THROUGH currentResults BELOW AND REMOVE EXTRA KEYS, HOWEVER _MailingLabels_exportCSV WILL IGNORE EXTRA FIELDS
@@ -1154,7 +1152,7 @@ define([
         return unique_array;
       },
 
-      _MailingLabels_format4CSV_noDups: function(currentResults) {
+      _MailingLabels_format4CSV_noDups: function (currentResults) {
         //Remove duplicates based on Address field only - last duplicate record is kept!!! 
         //http://www.tjcafferkey.me/remove-duplicates-from-array-of-objects/
         var unique_array = []; //Array for unique values - remove duplicates from results
@@ -1172,13 +1170,13 @@ define([
         return unique_array;
       },
 
-      _MailingLabels_exportCSV: function(array) {
+      _MailingLabels_exportCSV: function (array) {
         //CSV Export Workaround - need 'jimu/CSVUtils' & CSVUtils (functions mixed in somehow to ... menu (_onBtnMenuClicked in SingleQueryResult.js), but don't know how to call)
         //function(filename, datas, columns) - see CSVUtils.js
         CSVUtils.exportCSV('Mailing Labels', array, ['Name', 'Care Of', 'Address', 'City', 'State', 'Zip']); //Missing fields will be dropped - same list for every CSV - make global variable of field names
       },
 
-      _MailingLabels_createButton: function(array) {
+      _MailingLabels_createButton: function (array) {
         //Create 'Mailing Labels' button that opens results as a CSV file   (see 'Export to CSV file' function - ..\jimu.js\CSVUtils.js)
         //console.error(document.getElementById("Btn_MailingLabels") != null);  //same task = false
         //Remove existing button
@@ -1211,7 +1209,7 @@ define([
         //Find element for button insertion by current object property domNode (from singleQueryResult)
         //this._resultLayerInfos[#] - # is the order of which task has been run - need to use the current task index, which varies by the order tasks are run
         //Find DOM object index number that contains the current taskIndex - deferred need lang.hitch
-        this._MailingLabels_findIndex(this._resultLayerInfos).then(lang.hitch(this, function(value) {
+        this._MailingLabels_findIndex(this._resultLayerInfos).then(lang.hitch(this, function (value) {
           // Deferred success
           //console.error('DOM Index: ', value);  //index
           var theElement = this._resultLayerInfos[value].singleQueryResult.domNode.childNodes[1].childNodes[5]; //results-container
@@ -1222,18 +1220,18 @@ define([
           //Add click event to button - this.own(on(Node, 'click', lang.hitch(this, FUNCTION, param1, param2, etc)));
           this.own(on(dojo.byId("Btn_MailingLabels"), 'click', lang.hitch(this, this._MailingLabels_exportCSV, array))); //this.own(on(Node, 'click', lang.hitch(this, FUNCTION, param1, param2, etc)));
 
-        }), function(error) { //lang.hitch
+        }), function (error) { //lang.hitch
           // Do something when the process errors out
           alert(err);
         }); //end deferred
       },
 
-      _MailingLabels_findIndex: function(array1) {
+      _MailingLabels_findIndex: function (array1) {
         var indexDom = new Deferred();
         var currentTaskIndex = this.currentTaskIndex; //current task # being run (instead of using lang hitch)
         //loop through each object looking for the currentTaskIndex = taskIndex & return object index number
         //each object contains the results and task query #, need to find order user performed tasks to put button in correct location
-        array.forEach(array1, function(record, index) { //loop through all records
+        array.forEach(array1, function (record, index) { //loop through all records
           //console.error('Task Name: ', record.label, ' - Task Index: ', record.taskIndex, ' - DOM Index: ', index);
           if (currentTaskIndex == record.taskIndex) {
             //found the DOM index (order that the task (which has it's own index - this.currentTaskIndex) is being done by user) to place the Mailing Labels button
@@ -1243,7 +1241,6 @@ define([
         return indexDom;
 
       }
-
       //end MJM mailing label functions
 
     });
